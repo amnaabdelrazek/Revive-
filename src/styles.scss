@@ -1,0 +1,27 @@
+.revive-word {
+  padding-top: 5px;
+  text-align: right;
+    display: block;
+    color: #3187ff;
+    font-size: 17px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;  
+    background: linear-gradient(135deg, #ffffff , #60a5fa, #2563eb);
+    background-clip: text;
+    color: transparent;
+}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #02060c;
+  font-family: "Cairo", Arial, sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3389ff #02070d;
+}

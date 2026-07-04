@@ -1,0 +1,343 @@
+<section class="landing-page" dir="rtl">
+  <app-navbar></app-navbar>
+
+  <main>
+    <section class="hero" id="home">
+      <img
+        src="/assets/images/road.jpg"
+        alt="شخص يبدأ رحلة جديدة فوق قمة جبل"
+      />
+
+      <div class="hero-shade"></div>
+
+      <div class="hero-content page-shell">
+        <span class="eyebrow">رحلتك الجديدة تبدأ من هنا</span>
+
+        <h1>
+          ابدأ رحلتك نحو
+          <br />
+          <b>حياة جديدة</b>
+        </h1>
+
+        <p>
+          استعد السيطرة على حياتك من خلال برنامج علاجي متكامل يجمع بين
+          الدعم النفسي والإرشاد العملي في بيئة آمنة وسرية بالكامل.
+        </p>
+
+        <a routerLink="/register" class="primary-btn">
+          احجز مقعدك الآن
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+
+        <span class="secure-note">
+          <i class="fa-solid fa-shield-halved"></i>
+          خصوصيتك وبياناتك آمنة 100%
+        </span>
+      </div>
+    </section>
+
+    <section class="why-section page-shell" id="about">
+      <h2 class="section-title">لماذا <b>Revive</b> ؟</h2>
+
+      <div class="feature-grid">
+        @for (feature of features; track feature.title) {
+          <article>
+            <span class="feature-icon">
+              <i class="fa-solid" [ngClass]="feature.icon"></i>
+            </span>
+
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+          </article>
+        }
+      </div>
+
+      <div class="vision-grid">
+        <article class="vision-card">
+          <div class="card-title">
+            <i class="fa-solid fa-eye"></i>
+            <h3>رؤيتنا</h3>
+          </div>
+
+          <p>
+            أن نصبح المنصة العربية الرائدة في تقديم برامج التعافي من الإدمان
+            بأسلوب احترافي يجمع بين الخصوصية، الدعم النفسي، والتطوير الشخصي،
+            لنمنح كل فرد فرصة حقيقية لبداية جديدة.
+          </p>
+        </article>
+
+        <article class="goals-card">
+          <h3>هدفنا</h3>
+
+          <div class="goals-grid">
+            @for (goal of goals; track goal.title) {
+              <div>
+                <i class="fa-solid" [ngClass]="goal.icon"></i>
+
+                <span>
+                  <strong>{{ goal.title }}</strong>
+                  <small>{{ goal.description }}</small>
+                </span>
+              </div>
+            }
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="journey-section page-shell">
+      <h2 class="section-title">رحلة التعافي</h2>
+
+      <div class="journey-line">
+        @for (step of journey; track step.title; let index = $index) {
+          <article>
+            <span class="step-number">{{ index + 1 }}</span>
+
+            <i class="fa-solid" [ngClass]="step.icon"></i>
+
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="instructor page-shell" id="instructor">
+      <div class="instructor-photo">
+        <img
+          src="/assets/images/waleed-elsisi-reference.jpg"
+          alt="وليد السيسي مقدم برنامج التعافي"
+        />
+      </div>
+
+      <div class="instructor-copy">
+        <small>عن الانستراكتور</small>
+        <h2>وليد السيسي</h2>
+
+        <p>
+          يقدم برنامجًا عمليًا للتعافي يعتمد على الفهم العميق للإدمان وتغيير
+          أنماط التفكير وبناء أسلوب حياة صحي يساعد على الاستمرار في رحلة
+          التعافي.
+        </p>
+
+        <div class="instructor-actions">
+          <a routerLink="/register" class="primary-btn">
+            المحاضرات
+          </a>
+
+          <button type="button" class="outline-btn" (click)="openInstructorModal()">
+            عن الانستراكتور
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article>
+          <i class="fa-solid fa-users"></i>
+          <strong>+5000</strong>
+          <small>مستفيد من البرنامج</small>
+        </article>
+
+        <article>
+          <i class="fa-solid fa-newspaper"></i>
+          <strong>+15</strong>
+          <small>محاضرة محتوى عملي شامل</small>
+        </article>
+
+        <article>
+          <i class="fa-solid fa-shield-halved"></i>
+          <strong>100%</strong>
+          <small>بيئة آمنة وسرية بالكامل</small>
+        </article>
+
+        <article>
+          <i class="fa-solid fa-star"></i>
+          <strong>5</strong>
+          <small>سنوات خبرة في مجال التعافي</small>
+        </article>
+      </div>
+    </section>
+
+    @if (showInstructorModal) {
+      <div class="modal-backdrop" (click)="closeInstructorModal()">
+        <div class="instructor-modal" role="dialog" aria-modal="true" aria-labelledby="instructorModalTitle" (click)="$event.stopPropagation()">
+          <button
+        type="button"
+        class="modal-close"
+        aria-label="إغلاق"
+        (click)="closeInstructorModal(); $event.stopPropagation()"
+      >
+  <i class="fa-solid fa-xmark"></i>
+</button>
+          <div class="modal-image">
+            <img
+              src="/assets/images/waleed-elsisi-reference.jpg"
+              alt="وليد السيسي"
+            />
+          </div>
+
+          <div class="modal-content">
+            <small>عن الانستراكتور</small>
+            <h3 id="instructorModalTitle">اللواء وليد السيسي</h3>
+            <p>
+              اللواء وليد السيسي ضابط شرطة مصري متقاعد وكاتب، شغل منصب وكيل الإدارة العامة المختصة بالعمل الميداني في مجال مكافحة المخدرات، وكان له دور فعّال في تنفيذ العديد من المهام الأمنية على مدار مسيرته المهنية الطويلة.
+            </p>
+            <p>
+              لم يكتفِ وليد السيسي بخدمة الوطن في الميدان، بل حوّل تجاربه الأمنية الاستثنائية إلى كتب تحكي ما لم يُحكَ من قبل. قصصه ليست خيالاً ولا إثارة مصطنعة، بل هي وقائع حقيقية عاشها بنفسه، ورأى فيها أغرب وأعقد ما يمكن أن تصنعه النفس البشرية حين تنزلق نحو الجريمة.
+            </p>
+            <p>
+              يحكي وليد السيسي بأسلوب مشوّق وسلس يجمع بين الدقة الأمنية والبُعد الإنساني، ويجعلك تفهم كيف تفكر المجرم وكيف يفكر المحقق في الوقت ذاته. قصصه البوليسية الواقعية تعكس وجهاً من وجوه مصر الحقيقية التي لا تراها في الأخبار ولا في الروايات.
+            </p>
+            <div class="modal-highlights">
+              <strong>من أبرز أعماله</strong>
+              <span>كتاب ماذا تفعل لو كنت مكاني؟ حكايات لم تنشر من قبل</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <section class="services-section page-shell" id="lectures">
+      <h2 class="section-title">خدمات <b>Revive</b></h2>
+
+      <div class="services-grid">
+        @for (service of services; track $index) {
+          <article [class.available]="service.available">
+            <i class="fa-solid" [ngClass]="service.icon"></i>
+
+            <h3>{{ service.title }}</h3>
+            <p>{{ service.description }}</p>
+
+            @if (service.available) {
+              <a routerLink="/register">احجز الآن</a>
+            }
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="stories-section page-shell">
+      <h2 class="section-title">قصص نجاح</h2>
+
+      <div class="stories-wrap">
+        <button
+          type="button"
+          class="slider-arrow"
+          aria-label="السابق"
+          (click)="previousTestimonial()"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div class="stories-grid">
+          @for (story of testimonials; track story.name; let index = $index) {
+            <article [class.featured]="index === activeTestimonial">
+              <div class="quote">
+                <i class="fa-solid fa-quote-right"></i>
+                <span>★★★★★</span>
+              </div>
+
+              <p>{{ story.text }}</p>
+            </article>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="slider-arrow"
+          aria-label="التالي"
+          (click)="nextTestimonial()"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      </div>
+
+      <div class="slider-dots">
+        @for (story of testimonials; track story.name; let index = $index) {
+          <button
+            type="button"
+            [class.active]="index === activeTestimonial"
+            [attr.aria-label]="'الشهادة ' + (index + 1)"
+            (click)="setTestimonial(index)"
+          ></button>
+        }
+      </div>
+    </section>
+
+    <section class="faq-section page-shell" id="faq">
+      <div class="faq-grid">
+        @for (faq of faqs; track faq.question; let index = $index) {
+          <article [class.open]="openFaqIndex === index">
+            <button type="button" (click)="toggleFaq(index)">
+              <span>{{ faq.question }}</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+
+            @if (openFaqIndex === index) {
+              <p>{{ faq.answer }}</p>
+            }
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="legal-section page-shell" id="privacy">
+      <span class="eyebrow">سياسات Revive</span>
+      <h2 class="section-title">الخصوصية <b>والأمان</b></h2>
+
+      <div class="legal-grid">
+        @for (section of legalSections; track section.title) {
+          <article
+            class="legal-card"
+            [attr.id]="section.title === 'الشروط والأحكام' ? 'terms' : null"
+          >
+            <div class="legal-card-head">
+              <i class="fa-solid" [ngClass]="section.icon"></i>
+
+              <span>
+                <h3>{{ section.title }}</h3>
+                <small>{{ section.subtitle }}</small>
+              </span>
+            </div>
+
+            <div class="legal-blocks">
+              @for (block of section.blocks; track block.heading) {
+                <div class="legal-block">
+                  <h4>{{ block.heading }}</h4>
+
+                  @if (block.body) {
+                    <p>{{ block.body }}</p>
+                  }
+
+                  @if (block.items) {
+                    <ul>
+                      @for (item of block.items; track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  }
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="final-cta page-shell">
+      <div class="cta-shield">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+
+      <div>
+        <h2>رحلتك تبدأ بخطوة واحدة</h2>
+        <p>لا تؤجل قرار التعافي، ابدأ اليوم.</p>
+      </div>
+
+      <a routerLink="/register" class="primary-btn">
+        احجز مقعدك الآن
+        <i class="fa-solid fa-chevron-left"></i>
+      </a>
+    </section>
+  </main>
+</section>

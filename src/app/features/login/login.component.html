@@ -1,0 +1,106 @@
+<section class="login-page" dir="rtl">
+  <header class="topbar py-4">
+    <a routerLink="/register" class="back-link">انشاء حساب</a>
+
+    <div class="d-flex align-items-center justify-content-center brand-icon">
+           <img src="/assets/images/logo.png" alt="Revive Logo" class="brand-logo w-100 h-100"/>
+
+    </div>
+  </header>
+
+  <main class="login-content">
+    <div class="hero text-center">
+      <h1>أهلاً <span>بعودتك</span></h1>
+      <p>تابع رحلة تعافيك من حيث توقفت</p>
+    </div>
+
+    <form
+      class="login-card"
+      [formGroup]="loginForm"
+      (ngSubmit)="submit()"
+    >
+      <div class="form-group">
+        <label for="mobile_number">رقم الواتساب</label>
+
+        <input
+          id="mobile_number"
+          type="tel"
+          class="form-control login-input"
+          placeholder="رقم الواتساب"
+          formControlName="mobile_number"
+          autocomplete="tel"
+        />
+
+        @if (getFieldError('mobile_number')) {
+          <small class="error-message">
+            {{ getFieldError('mobile_number') }}
+          </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+
+        <div class="password-field">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control login-input"
+            placeholder="••••••••"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePassword()"
+            [attr.aria-label]="
+              showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'
+            "
+          >
+            <i
+              class="bi"
+              [class.bi-eye]="!showPassword"
+              [class.bi-eye-slash]="showPassword"
+            ></i>
+          </button>
+        </div>
+
+        @if (getFieldError('password')) {
+          <small class="error-message">
+            {{ getFieldError('password') }}
+          </small>
+        }
+      </div>
+
+      @if (getFormErrorMessage()) {
+        <small class="error-message">
+          {{ getFormErrorMessage() }}
+        </small>
+      }
+
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="isSubmitting"
+      >
+        <span>
+          {{ isSubmitting ? 'جاري تسجيل الدخول...' : 'ابدأ رحلتك للتعافي' }}
+        </span>
+
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+
+      <div class="privacy-text">
+        <i class="fa-solid fa-shield"></i>
+        <span>جميع بياناتك مشفرة ومحمية بسرية تامة</span>
+      </div>
+    </form>
+
+    <p class="register-link">
+      ليس لديك حساب؟
+      <a routerLink="/register">أنشئ حسابك الآن</a>
+    </p>
+  </main>
+</section>

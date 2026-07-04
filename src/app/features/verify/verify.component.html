@@ -1,0 +1,48 @@
+<section class="verify-page" dir="rtl">
+  <header class="topbar">
+    <a class="brand" routerLink="/">
+      <div class="brand-icon">
+        <img src="/assets/images/logo.png" alt="Revive Logo" />
+      </div>
+    </a>
+
+    <a class="back-link" routerLink="/login">العودة إلى تسجيل الدخول</a>
+  </header>
+
+  <div class="verify-content">
+    <div class="hero">
+      <h1 class="text-center">تأكيد <span>الحساب</span></h1>
+      <p>أدخل الرمز المرسل إلى رقمك للتأكيد والبدء في استخدام حسابك.</p>
+    </div>
+
+    <div class="verify-card">
+      <form [formGroup]="verifyForm" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label for="otp">رمز التحقق</label>
+          <input
+            id="otp"
+            class="login-input"
+            formControlName="otp"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="123456"
+          />
+
+          @if (verifyForm.get('otp')?.touched && verifyForm.get('otp')?.invalid) {
+            <span class="error-message">أدخل رمز تحقق صحيح</span>
+          }
+
+          @if (errorMessage) {
+            <span class="error-message">{{ errorMessage }}</span>
+          }
+        </div>
+
+        <button class="login-button" type="submit" [disabled]="isSubmitting">
+          <i class="fa-solid fa-shield-check"></i>
+          {{ isSubmitting ? 'جاري التحقق...' : 'تأكيد الحساب' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</section>

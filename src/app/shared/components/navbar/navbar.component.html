@@ -1,0 +1,65 @@
+<nav class="navbar navbar-dark revive-navbar px-4">
+
+  <!-- Brand / Logo -->
+  <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
+    <div class="brand-icon d-flex align-items-center justify-content-center">
+      <img src="/assets/images/logo.png" alt="Revive Logo" class="brand-logo w-100 h-100"/>
+    </div>
+
+    <!-- <div class="brand-text d-flex flex-column align-items-start">
+      <span class="revive-word">REVIVE</span>
+      <span class="brand-subtitle">رحلة التعافي</span>
+    </div> -->
+  </a>
+
+  <!-- Center Links Desktop -->
+  <div class="navbar-links">
+    <a href="#home">الرئيسية</a>
+    <a href="#about">عن Revive</a>
+    <a href="#lectures">الخدمات</a>
+    <a href="#instructor">الانستراكتور</a>
+    <a href="#faq">الأسئلة الشائعة</a>
+  </div>
+
+  <!-- Auth links -->
+  <div class="navbar-auth d-flex align-items-center gap-3">
+    <ng-container *ngIf="!isLoggedIn">
+      <a href="#" class="nav-login" routerLink="/login">تسجيل الدخول</a>
+      <a href="#" class="btn btn-create-account" routerLink="/register">إنشاء حساب</a>
+    </ng-container>
+
+    <ng-container *ngIf="isLoggedIn">
+      <a href="#" class="nav-profile" routerLink="/user-profile" title="الملف الشخصي">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M12 14c-5 0-8 3-8 3v6h16v-6s-3-3-8-3z"/>
+        </svg>
+      </a>
+
+      <button (click)="logout()" class="btn btn-logout">تسجيل الخروج</button>
+    </ng-container>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button
+    type="button"
+    class="mobile-menu-btn"
+    [class.open]="isMobileMenuOpen"
+    (click)="toggleMobileMenu()"
+    aria-label="فتح القائمة"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Mobile Dropdown -->
+  <div class="mobile-navbar-links" [class.open]="isMobileMenuOpen">
+    <a href="#home" (click)="closeMobileMenu()">الرئيسية</a>
+    <a href="#about" (click)="closeMobileMenu()">عن Revive</a>
+    <a href="#lectures" (click)="closeMobileMenu()">الخدمات</a>
+    <a href="#instructor" (click)="closeMobileMenu()">الانستراكتور</a>
+    <a href="#faq" (click)="closeMobileMenu()">الأسئلة الشائعة</a>
+  </div>
+
+</nav>

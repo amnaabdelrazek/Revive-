@@ -1,0 +1,290 @@
+<section class="revive-page" dir="rtl">
+  <header class="topbar flex-row-reverse py-4">
+    <a class="login-link" routerLink="/login">لدي حساب</a>
+
+  <div class="d-flex align-items-center justify-content-center brand-icon">
+           <img src="/assets/images/logo.png" alt="Revive Logo" class="brand-logo w-100 h-100"/>
+
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="hero-text text-center">
+      <h2>
+        ابدأ <span>رحلتك</span>
+      </h2>
+
+      <p>جميع البيانات الخاصة بك مشفرة ومحمية بأعلى معايير السرية</p>
+    </div>
+
+    <form class="register-card" [formGroup]="registerForm" (ngSubmit)="submit()">
+      <!-- Name -->
+      <div class="form-block">
+        <div class="label-row">
+          <label>الاسم أو اللقب</label>
+          <small>من 3 إلى 20 حرفًا</small>
+        </div>
+
+        <input
+          type="text"
+          class="form-control revive-input"
+          placeholder="الاسم أو اللقب"
+          formControlName="display_name"
+        />
+
+        @if (getFieldError('display_name')) {
+          <small class="error-message">{{ getFieldError('display_name') }}</small>
+        }
+      </div>
+
+      <!-- Phone -->
+      <div class="form-block">
+        <div class="label-row">
+          <label>رقم الواتساب</label>
+          <small>نتواصل معك بسرية تامة</small>
+        </div>
+
+        <div class="phone-row">
+          <select class="country-select revive-input" [value]="selectedCountryDialCode" (change)="onCountryChange($event)">
+            <option *ngFor="let country of countries" [value]="country.dialCode">
+             {{ country.name }} ({{ country.dialCode }})
+            </option>
+          </select>
+
+          <input
+            type="tel"
+            class="form-control revive-input"
+            placeholder="1012345678"
+            formControlName="mobile_number"
+          />
+        </div>
+
+        @if (getFieldError('mobile_number')) {
+          <small class="error-message">{{ getFieldError('mobile_number') }}</small>
+        }
+      </div>
+
+      <!-- Passwords -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="form-block">
+            <div class="label-row">
+              <label>كلمة المرور</label>
+              <small>8 أحرف على الأقل</small>
+            </div>
+
+            <div class="password-wrap">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control revive-input"
+                placeholder="كلمة المرور"
+                formControlName="password"
+              />
+
+              <button type="button" (click)="showPassword = !showPassword">
+                <i
+                  class="bi"
+                  [class.bi-eye]="!showPassword"
+                  [class.bi-eye-slash]="showPassword"
+                ></i>
+              </button>
+            </div>
+
+            @if (getFieldError('password')) {
+              <small class="error-message">{{ getFieldError('password') }}</small>
+            }
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-block">
+            <div class="label-row">
+              <label>تأكيد كلمة المرور</label>
+            </div>
+
+            <input
+              type="password"
+              class="form-control revive-input"
+              placeholder="تأكيد كلمة المرور"
+              formControlName="confirmPassword"
+            />
+
+            @if (getFieldError('confirmPassword')) {
+              <small class="error-message">{{ getFieldError('confirmPassword') }}</small>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Substance -->
+      <div class="section-block">
+        <div class="section-title">
+          <h3>نوع المخدر</h3>
+          <small>اختر واحدًا فقط</small>
+        </div>
+
+        <div class="choice-grid">
+          <button
+            type="button"
+            class="choice-card"
+            *ngFor="let item of substances"
+            [class.active]="registerForm.value.substance_ids?.includes(item.id)"
+            (click)="selectSubstance(item.id)"
+          >
+            <strong>{{ item.title }}</strong>
+            <span>{{ item.desc }}</span>
+          </button>
+        </div>
+
+        @if (getFieldError('substance_ids')) {
+          <small class="error-message">{{ getFieldError('substance_ids') }}</small>
+        }
+      </div>
+
+      <!-- Duration -->
+      <div class="section-block">
+        <div class="section-title">
+          <h3>فترة تعاطي المخدر</h3>
+        </div>
+
+        <div class="option-grid">
+          <button
+            type="button"
+            class="option-btn"
+            *ngFor="let item of durations"
+            [class.active]="registerForm.value.addiction_duration_id === item.id"
+            (click)="selectValue('addiction_duration_id', item.id)"
+          >
+            {{ item.label }}
+          </button>
+        </div>
+
+        @if (getFieldError('addiction_duration_id')) {
+          <small class="error-message">{{ getFieldError('addiction_duration_id') }}</small>
+        }
+      </div>
+
+      <!-- Previous Treatment -->
+      <div class="section-block">
+        <div class="section-title">
+          <h3>سابقة العلاج</h3>
+        </div>
+
+        <div class="option-grid">
+          <button
+            type="button"
+            class="option-btn"
+            *ngFor="let item of priorTreatmentOptions"
+            [class.active]="registerForm.value.had_prior_treatment === item.value"
+            (click)="selectValue('had_prior_treatment', item.value)"
+          >
+            {{ item.label }}
+          </button>
+        </div>
+
+        @if (getFieldError('had_prior_treatment')) {
+          <small class="error-message">{{ getFieldError('had_prior_treatment') }}</small>
+        }
+
+        @if (registerForm.value.had_prior_treatment === true) {
+          <div class="section-title mt-4">
+            <h3>نوع العلاج السابق</h3>
+            <small>اختر النوع الأقرب لتجربتك</small>
+          </div>
+
+          <div class="option-grid">
+            <button
+              type="button"
+              class="option-btn"
+              *ngFor="let item of treatmentTypes"
+              [class.active]="registerForm.value.treatment_type_ids?.includes(item.id)"
+              (click)="selectTreatmentType(item.id)"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+
+          @if (getFieldError('treatment_type_ids')) {
+            <small class="error-message">{{ getFieldError('treatment_type_ids') }}</small>
+          }
+        }
+      </div>
+
+      <!-- Education -->
+      <div class="section-block">
+        <div class="section-title">
+          <h3>المستوى التعليمي</h3>
+        </div>
+
+        <div class="option-grid">
+          <button
+            type="button"
+            class="option-btn"
+            *ngFor="let item of educationLevels"
+            [class.active]="registerForm.value.education_level_id === item.id"
+            (click)="selectValue('education_level_id', item.id)"
+          >
+            {{ item.label }}
+          </button>
+        </div>
+
+        @if (getFieldError('education_level_id')) {
+          <small class="error-message">{{ getFieldError('education_level_id') }}</small>
+        }
+      </div>
+
+      <!-- Days Clean -->
+      <div class="form-block">
+        <div class="label-row">
+          <label>عدد أيام التعافي</label>
+          <small>اكتب 0 لو لسه في البداية</small>
+        </div>
+
+        <input
+          type="number"
+          min="0"
+          class="form-control revive-input"
+          placeholder="مثال: 5"
+          formControlName="days_clean"
+        />
+
+        @if (getFieldError('days_clean')) {
+          <small class="error-message">{{ getFieldError('days_clean') }}</small>
+        }
+      </div>
+
+      <!-- Reason -->
+      <div class="form-block">
+        <div class="label-row">
+          <label>أسباب الإدمان</label>
+          <small>اختياري</small>
+        </div>
+
+        <textarea
+          class="form-control revive-input revive-textarea"
+          placeholder="شاركنا ما يساعدنا في فهم رحلتك بشكل أفضل..."
+          formControlName="addiction_reason"
+        ></textarea>
+      </div>
+
+      <!-- Privacy -->
+      <div class="privacy-box">
+        <i class="fa-solid fa-shield"></i>
+        <span>
+          جميع بياناتك مشفرة ومحمية بأعلى معايير السرية ولن يتم مشاركتها مع أي طرف ثالث.
+        </span>
+      </div>
+
+      @if (registerForm.errors?.['submitFailed']) {
+        <small class="error-message d-block text-center">
+          حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى
+        </small>
+      }
+
+      <button class="submit-btn" type="submit">
+        إنشاء حسابي وبدء الرحلة
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </form>
+  </main>
+</section>

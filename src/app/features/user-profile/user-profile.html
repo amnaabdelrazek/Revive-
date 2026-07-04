@@ -1,0 +1,386 @@
+<section class="profile-page" dir="rtl">
+  <header class="topbar">
+    <a class="brand" routerLink="/">
+     <div class="brand-icon d-flex align-items-center justify-content-center">
+      <img src="/assets/images/logo.png" alt="Revive Logo" class="brand-logo w-100 h-100"/>
+    </div>
+    </a>
+
+    <nav>
+      <a routerLink="/home">
+        <i class="fa-solid fa-house"></i>
+        الرئيسية
+      </a>
+
+      <button type="button" aria-label="سجل الجلسات" (click)="openHistory()">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </button>
+
+      <!-- <button type="button" aria-label="تسجيل الخروج" (click)="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button> -->
+    </nav>
+  </header>
+
+  <main class="profile-shell">
+    <section class="profile-hero">
+      <div class="avatar" aria-hidden="true">
+        {{ profile.name.charAt(0) }}
+      </div>
+
+      <div class="hero-copy">
+        <span class="status">
+          <i class="fa-solid fa-circle-check"></i>
+          حساب موثّق وآمن
+        </span>
+
+        <h1>أهلاً، {{ profile.name }}</h1>
+
+        <p>كل خطوة صغيرة اليوم تقرّبك من الحياة التي تستحقها.</p>
+      </div>
+
+      <div class="member-since">
+        <small>عضو منذ</small>
+        <strong>{{ profile.joinedAt }}</strong>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <div class="profile-column">
+        <section class="panel">
+          <div class="panel-title">
+            <div>
+              <i class="fa-solid fa-user"></i>
+
+              <span>
+                <h2>البيانات الشخصية</h2>
+                <p>بيانات التواصل الأساسية</p>
+              </span>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <article>
+              <i class="fa-solid fa-id-badge"></i>
+              <span>
+                <small>الاسم</small>
+                <strong>{{ profile.name }}</strong>
+              </span>
+            </article>
+
+            <article>
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>
+                <small>رقم الواتساب</small>
+                <strong dir="ltr">{{ profile.phone }}</strong>
+              </span>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel recovery-panel">
+          <div class="panel-title">
+            <div>
+              <i class="fa-solid fa-heart-pulse"></i>
+
+              <span>
+                <h2>ملف رحلة التعافي</h2>
+                <p>المعلومات التي شاركتها معنا</p>
+              </span>
+            </div>
+
+            <span class="private">
+              <i class="fa-solid fa-shield-halved"></i>
+              سري
+            </span>
+          </div>
+
+          <div class="recovery-grid">
+            <article>
+              <small>نوع المخدر</small>
+              <strong>{{ profile.drugType }}</strong>
+              <p>{{ profile.drugDetails }}</p>
+            </article>
+
+            <article>
+              <small>فترة التعاطي</small>
+              <strong>{{ profile.usageDuration }}</strong>
+            </article>
+
+            <article>
+              <small>سابقة العلاج</small>
+              <strong>{{ profile.previousTreatment }}</strong>
+            </article>
+
+            <article>
+              <small>المستوى التعليمي</small>
+              <strong>{{ profile.education }}</strong>
+            </article>
+
+            <article class="reason">
+              <small>أسباب الإدمان</small>
+              <p>{{ profile.addictionReason }}</p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="session-column">
+        <div class="section-heading">
+          <span>خطوتك القادمة</span>
+          <h2>اختر جلستك</h2>
+          <p>اختر الموعد الأنسب لك، سواء فردية أو جماعية.</p>
+        </div>
+
+        @if (hasNoSessions) {
+          <div class="empty-state">
+            <p>لا يوجد جلسات حتى الآن</p>
+          </div>
+        } @else {
+        <div class="tickets">
+@for (session of sessions; track session.selectionKey) {
+              <button
+              type="button"
+              class="ticket"
+[class.selected]="selectedSessionKey === session.selectionKey"
+              (click)="selectSession(session)"
+            >
+              <span class="ticket-date">
+                <small>{{ session.day }}</small>
+                <strong>{{ session.date }}</strong>
+                <em>{{ session.time }}</em>
+              </span>
+
+              <span class="ticket-cut" aria-hidden="true"></span>
+
+              <span class="ticket-info">
+                <span class="ticket-topline">
+                  <span class="availability">
+                    <i class="fa-solid fa-circle"></i>
+                    {{ session.availability }}
+                  </span>
+
+                  <span
+                    class="ticket-category"
+                    [class.available]="session.category === 'available'"
+                    [class.upcoming]="session.category === 'upcoming'"
+                    [class.paid]="session.category === 'paid'"
+                  >
+                    {{ session.categoryLabel }}
+                  </span>
+                </span>
+
+                <strong>{{ session.specialist }}</strong>
+
+                <small>
+                  <i class="fa-solid fa-video"></i>
+                  {{ session.type }}
+                  <b></b>
+                  <i class="fa-regular fa-clock"></i>
+                  {{ session.duration }}
+                </small>
+
+                <span class="price-line">
+                  <span>سعر الجلسة</span>
+                  <strong>{{ session.price }}</strong>
+                </span>
+
+                @if (session.type !== 'جلسة فردية') {
+                  <span class="seats-line">
+                    <span>المقاعد المكتملة</span>
+                    <strong dir="ltr">
+                      {{ session.seatsReserved }}/{{ session.seatsTotal }}
+                    </strong>
+                  </span>
+
+                  <span class="seat-progress" aria-hidden="true">
+                    <span [style.width.%]="getSeatPercent(session)"></span>
+                  </span>
+                }
+              </span>
+
+@if (selectedSessionKey === session.selectionKey) {
+                  <i class="fa-solid fa-circle-check selection-icon"></i>
+              } @else {
+                <i class="fa-regular fa-circle selection-icon"></i>
+              }
+            </button>
+          }
+        </div>
+        }
+
+        <div class="booking-box" [class.confirmed]="bookingConfirmed">
+          @if (bookingConfirmed) {
+            <i class="fa-solid fa-circle-check success-icon"></i>
+
+            <div>
+              <strong>تم حجز جلستك بنجاح</strong>
+              <small>سنرسل تفاصيل الجلسة إلى بريدك وواتساب.</small>
+            </div>
+          } @else if (selectedSession; as session) {
+            @if (session.category === 'paid') {
+              <div class="booking-summary">
+                <span>
+                  <small>الحالة</small>
+                  <strong>{{ session.categoryLabel }}</strong>
+                </span>
+
+                <i class="fa-solid fa-calendar-xmark"></i>
+              </div>
+            } @else {
+              <div class="booking-summary">
+                <span>
+                  <small>موعدك المختار</small>
+                  <strong>
+                    {{ session.day }}، {{ session.date }} - {{ session.time }}
+                  </strong>
+                </span>
+
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+
+              <button type="button" (click)="openBookingModal()">
+                احجز وادفع الآن
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+            }
+          }
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  @if (historyOpen) {
+    <div class="modal-backdrop" (click)="closeHistory()">
+      <section
+        class="profile-modal history-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="سجل الجلسات"
+        (click)="$event.stopPropagation()"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeHistory()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-heading">
+          <span>
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            سجل الجلسات
+          </span>
+
+        </div>
+
+        <div class="history-groups">
+  @if (historyLoading) {
+    <div class="empty-state">
+      <p>جاري تحميل سجل الجلسات...</p>
+    </div>
+  } @else if (historyError) {
+    <div class="empty-state">
+      <p>{{ historyError }}</p>
+    </div>
+  } @else if (!historyTickets.length) {
+    <div class="empty-state">
+      <p>لا يوجد سجل جلسات حتى الآن</p>
+    </div>
+  } @else {
+    <section class="mt-3">
+      @for (ticket of historyTickets; track ticket.id) {
+        <article
+          class="history-ticket"
+          [class.paid]="ticket.status === 'paid'"
+          [class.upcoming]="ticket.status === 'upcoming'"
+          [class.pending]="ticket.status === 'finished' || ticket.status === 'available' || ticket.status === 'cancelled'"
+        >
+          <span>
+            <small>{{ ticket.day }}، {{ ticket.date }}</small>
+            <strong>{{ ticket.time }}</strong>
+          </span>
+
+          <span>
+            <strong>{{ ticket.specialist }}</strong>
+            <small>{{ ticket.type }}</small>
+          </span>
+
+          <em>{{ ticket.statusLabel }}</em>
+          <b>{{ ticket.amount }}</b>
+        </article>
+      }
+    </section>
+  }
+</div>
+      </section>
+    </div>
+  }
+
+  @if (bookingModalOpen) {
+    <div class="modal-backdrop" (click)="closeBookingModal()">
+      <section
+        class="profile-modal booking-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="تأكيد حجز الجلسة"
+        (click)="$event.stopPropagation()"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeBookingModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        @if (bookingConfirmed) {
+          <div class="booking-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <h2>تم حجز الجلسة بنجاح</h2>
+            <p>سنرسل تفاصيل الجلسة ورابط المتابعة على واتساب.</p>
+          </div>
+        } @else if (selectedSession; as session) {
+          <div class="modal-heading">
+            <span>
+              <i class="fa-solid fa-credit-card"></i>
+              الدفع والحجز
+            </span>
+
+            <h2>تأكيد حجز الجلسة</h2>
+
+            <p>{{ session.day }}، {{ session.date }} - {{ session.time }}</p>
+          </div>
+
+          <div class="payment-card">
+            <img [src]="instapayImage" alt="InstaPay" />
+
+            <a [href]="instapayLink" target="_blank" rel="noopener">
+              افتح رابط InstaPay
+              <i class="fa-solid fa-up-right-from-square"></i>
+            </a>
+          </div>
+
+          <label class="whatsapp-field">
+            <span>اسم المرسل</span>
+
+            <input
+              type="text"
+              [(ngModel)]="senderName"
+              placeholder="أدخل اسم المرسل"
+            />
+          </label>
+
+          <label class="whatsapp-field">
+            <span>رقم واتساب</span>
+
+            <input
+              type="tel"
+              dir="ltr"
+              [(ngModel)]="whatsappNumber"
+              placeholder="+20 100 000 0000"
+            />
+          </label>
+
+          <button type="button" class="send-booking" (click)="sendBooking()">
+            إرسال وتأكيد الحجز
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        }
+      </section>
+    </div>
+  }
+</section>
