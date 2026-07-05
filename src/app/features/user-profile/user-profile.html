@@ -280,13 +280,56 @@
     <div class="empty-state">
       <p>{{ historyError }}</p>
     </div>
-  } @else if (!historyTickets.length) {
+  } @else if (!hasHistoryTickets) {
     <div class="empty-state">
       <p>لا يوجد سجل جلسات حتى الآن</p>
     </div>
   } @else {
-    <section class="mt-3">
-      @for (ticket of historyTickets; track ticket.id) {
+    <ul class="nav nav-tabs history-tabs mt-3 p-0" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeHistoryTab === 'attended'"
+          role="tab"
+          [attr.aria-selected]="activeHistoryTab === 'attended'"
+          aria-controls="attended-history"
+          (click)="selectHistoryTab('attended')"
+        >
+          تم حضورها
+        </button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeHistoryTab === 'upcoming'"
+          role="tab"
+          [attr.aria-selected]="activeHistoryTab === 'upcoming'"
+          aria-controls="upcoming-history"
+          (click)="selectHistoryTab('upcoming')"
+        >
+          قادمة
+        </button>
+      </li>
+    </ul>
+
+    <section
+      class="tab-content history-tab-content"
+      [id]="activeHistoryTab === 'attended' ? 'attended-history' : 'upcoming-history'"
+      role="tabpanel"
+    >
+      @if (activeHistoryTab === 'attended' && !attendedHistoryTickets.length) {
+        <div class="empty-state">
+          <p>لا توجد محاضرات تم حضورها حتي الان</p>
+        </div>
+      } @else if (activeHistoryTab === 'upcoming' && !upcomingHistoryTickets.length) {
+        <div class="empty-state">
+          <p>لا توجد محاضرات قادمة حتي الان</p>
+        </div>
+      } @else {
+      @for (ticket of (activeHistoryTab === 'attended' ? attendedHistoryTickets : upcomingHistoryTickets); track ticket.id) {
         <article
           class="history-ticket"
           [class.paid]="ticket.status === 'paid'"
@@ -306,6 +349,7 @@
           <em>{{ ticket.statusLabel }}</em>
           <b>{{ ticket.amount }}</b>
         </article>
+      }
       }
     </section>
   }

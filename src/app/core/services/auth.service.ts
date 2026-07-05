@@ -65,16 +65,19 @@ export interface SessionApiResponse {
   body: {
     sessions: Array<{
       id: number;
-      group_id: number;
-      group_name: string;
-      group_name_ar: string;
-      group_name_en: string;
+      group_id?: number;
+      group_name?: string;
+      group_name_ar?: string;
+      group_name_en?: string;
+      substance_category_id?: number;
+      substance_category_name_ar?: string;
+      substance_category_name_en?: string;
       instructor_id: number;
       instructor_name: string;
       session_number: number;
-      title: string;
+      title?: string;
       session_type: string;
-      session_type_label: string;
+      session_type_label?: string;
       status: string;
       scheduled_at: string;
       date: string;
@@ -82,21 +85,29 @@ export interface SessionApiResponse {
       started_at: string | null;
       ended_at: string | null;
       duration_minutes: number;
-      jitsi_room_name: string;
-      jitsi_jwt_issued_at: string | null;
-      session_metadata: {
+      jitsi_room_name?: string;
+      jitsi_jwt_issued_at?: string | null;
+      session_metadata?: {
         title: string;
         max_participants: number;
       };
-      max_participants: number;
-      current_participants: number;
-      is_full: boolean;
+      max_participants?: number;
+      current_participants?: number;
+      is_full?: boolean;
       price: number;
       formatted_price: string;
-      created_at: string;
-      updated_at: string;
-      is_booked: boolean;
-      is_locked: boolean;
+      created_at?: string;
+      updated_at?: string;
+      is_booked?: boolean;
+      is_locked?: boolean;
+      attendance?: {
+        joined_at: string | null;
+        left_at: string | null;
+        was_present: boolean;
+        has_rated: boolean;
+        rating: number | null;
+        comment: string | null;
+      };
     }>;
   };
   info: string;
@@ -170,6 +181,13 @@ export class AuthService {
     const headers = this.buildAuthHeaders(token);
 
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming`, { headers });
+  }
+
+  getAttendedSessions(): Observable<SessionApiResponse> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+
+    return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/attended`, { headers });
   }
 
   getUpcomingUnpaidSessions(): Observable<SessionApiResponse> {
