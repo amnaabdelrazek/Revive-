@@ -27,14 +27,34 @@ export class LoginComponent {
   showPassword = false;
   isSubmitting = false;
   serverError: string | null = null;
+  selectedCountryDialCode = '+20';
 
+   countries = [
+    { flag: '🇪🇬', name: 'مصر', dialCode: '+20' },
+    { flag: '🇸🇦', name: 'السعودية', dialCode: '+966' },
+    { flag: '🇦🇪', name: 'الإمارات', dialCode: '+971' },
+    { flag: '🇯🇴', name: 'الأردن', dialCode: '+962' },
+    { flag: '🇶🇦', name: 'قطر', dialCode: '+974' },
+    { flag: '🇰🇼', name: 'الكويت', dialCode: '+965' },
+  ];
+  
   readonly loginForm = this.fb.nonNullable.group({
-    mobile_number: ['', [Validators.required, Validators.pattern(/^1[0125][0-9]{8}$/)]],
+    mobile_number: ['', [Validators.required, Validators.pattern(/^\d{6,15}$/)]],
     password: ['', Validators.required],
   });
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  onCountryChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.selectedCountryDialCode = target.value;
+  }
+
+  private normalizeMobileNumber(value: string): string {
+    const digits = value.replace(/\D/g, '');
+    return digits ? `${this.selectedCountryDialCode}${digits}` : '';
   }
 
   getFieldError(controlName: 'mobile_number' | 'password'): string | null {
@@ -76,7 +96,7 @@ export class LoginComponent {
 
     const { mobile_number, password } = this.loginForm.getRawValue();
 
-    this.authService.login({ mobile_number: `+20${mobile_number}`, password }).subscribe({
+    this.authService.login({ mobile_number: this.normalizeMobileNumber(mobile_number), password }).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.router.navigate(['/user-profile']);

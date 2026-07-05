@@ -22,14 +22,22 @@
       <div class="form-group">
         <label for="mobile_number">رقم الواتساب</label>
 
-        <input
-          id="mobile_number"
-          type="tel"
-          class="form-control login-input"
-          placeholder="رقم الواتساب"
-          formControlName="mobile_number"
-          autocomplete="tel"
-        />
+        <div class="phone-row">
+          <select class="country-select login-input" [value]="selectedCountryDialCode" (change)="onCountryChange($event)">
+            <option *ngFor="let country of countries" [value]="country.dialCode">
+              {{ country.name }} ({{ country.dialCode }})
+            </option>
+          </select>
+
+          <input
+            id="mobile_number"
+            type="tel"
+            class="form-control login-input"
+            placeholder="رقم الواتساب"
+            formControlName="mobile_number"
+            autocomplete="tel"
+          />
+        </div>
 
         @if (getFieldError('mobile_number')) {
           <small class="error-message">
