@@ -808,6 +808,15 @@ a {
   color: #8ca59c;
   font-size: 12px;
 }
+.nav-link.active{
+  background-color: #bcccf9 !important;
+}
+--bs-nav-tabs-border-color{
+border-color: #bcccf9 !important;
+} 
+.nav-link:hover{
+  border-color: #bcccf9 !important;
+}
 
 @media (max-width: 900px) {
   .content-grid {

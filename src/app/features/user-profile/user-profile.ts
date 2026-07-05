@@ -73,11 +73,14 @@ export class UserProfile implements OnInit {
 
   sessions: RecoverySession[] = [];
   historyTickets: SessionTicket[] = [];
+  attendedHistoryTickets: SessionTicket[] = [];
+  upcomingHistoryTickets: SessionTicket[] = [];
   hasNoSessions = false;
 
 selectedSessionKey: string | null = null;
 bookingConfirmed = false;
   historyOpen = false;
+  activeHistoryTab: 'attended' | 'upcoming' = 'attended';
   bookingModalOpen = false;
 historyLoading = false;
 historyError = '';
@@ -100,6 +103,10 @@ historyError = '';
 
   get pendingTickets(): SessionTicket[] {
     return this.historyTickets.filter((ticket) => ticket.status === 'cancelled');
+  }
+
+  get hasHistoryTickets(): boolean {
+    return this.attendedHistoryTickets.length > 0 || this.upcomingHistoryTickets.length > 0;
   }
 
   ngOnInit(): void {
@@ -146,6 +153,8 @@ historyError = '';
       error: () => {
         this.sessions = [];
         this.historyTickets = [];
+        this.attendedHistoryTickets = [];
+        this.upcomingHistoryTickets = [];
         this.hasNoSessions = true;
         this.selectedSessionKey = null;
         this.cdr.markForCheck();
@@ -164,26 +173,46 @@ historyError = '';
 }
 
   getSeatPercent(session: RecoverySession): number {
+    if (!session.seatsTotal) {
+      return 0;
+    }
+
     return Math.round((session.seatsReserved / session.seatsTotal) * 100);
   }
 
   openHistory(): void {
     this.historyOpen = true;
+    this.activeHistoryTab = 'attended';
     this.loadHistorySessions();
   }
+
+  selectHistoryTab(tab: 'attended' | 'upcoming'): void {
+    this.activeHistoryTab = tab;
+  }
+
   loadHistorySessions(): void {
   this.historyLoading = true;
   this.historyError = '';
 
-  this.authService.getSessionsHistory().subscribe({
-    next: (response) => {
-      this.historyTickets = this.mapHistoryTickets(response);
+  forkJoin({
+    attended: this.authService.getAttendedSessions(),
+    upcoming: this.authService.getUpcomingSessions(),
+  }).subscribe({
+    next: ({ attended, upcoming }) => {
+      this.attendedHistoryTickets = this.mapHistoryTickets(attended);
+      this.upcomingHistoryTickets = this.mapHistoryTickets(upcoming);
+      this.historyTickets = [
+        ...this.attendedHistoryTickets,
+        ...this.upcomingHistoryTickets,
+      ];
       this.historyLoading = false;
       this.cdr.markForCheck();
       this.cdr.detectChanges();
     },
     error: () => {
       this.historyTickets = [];
+      this.attendedHistoryTickets = [];
+      this.upcomingHistoryTickets = [];
       this.historyLoading = false;
       this.historyError = 'تعذر تحميل سجل الجلسات';
       this.cdr.markForCheck();
@@ -478,8 +507,8 @@ historyError = '';
       price: session.formatted_price || `${session.price} ج.م`,
       availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
       available: isAvailable,
-      seatsReserved: session.current_participants,
-      seatsTotal: session.max_participants,
+      seatsReserved: session.current_participants ?? 0,
+      seatsTotal: session.max_participants ?? session.session_metadata?.max_participants ?? 0,
       category,
       categoryLabel,
     };
