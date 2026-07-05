@@ -152,6 +152,18 @@
   }
 }
 
+.phone-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 8px;
+  direction: rtl;
+}
+
+.country-select {
+  appearance: none;
+  cursor: pointer;
+}
+
 .password-field {
   position: relative;
 
@@ -287,5 +299,14 @@
   .login-card {
     padding: 29px 20px 25px;
     border-radius: 20px;
+  }
+
+  .phone-row {
+    grid-template-columns: 100px 1fr;
+  }
+
+  .country-select {
+    font-size: 9px;
+    font-weight: 600;
   }
 }
