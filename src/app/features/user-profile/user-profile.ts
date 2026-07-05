@@ -520,7 +520,7 @@ historyError = '';
     const status = session.status?.toLowerCase();
 
     let ticketStatus: SessionTicket['status'] = 'available';
-    let statusLabel = 'متاحة للحجز';
+    let statusLabel = 'جارية الان';
 
     if (status === 'finished' || status === 'completed') {
       ticketStatus = 'finished';
