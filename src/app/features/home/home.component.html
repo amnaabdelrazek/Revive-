@@ -1,3 +1,4 @@
+
 <section class="landing-page" dir="rtl">
   <app-navbar></app-navbar>
 
@@ -160,18 +161,25 @@
 
     @if (showInstructorModal) {
       <div class="modal-backdrop" (click)="closeInstructorModal()">
-        <div class="instructor-modal" role="dialog" aria-modal="true" aria-labelledby="instructorModalTitle" (click)="$event.stopPropagation()">
+        <div
+          class="instructor-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="instructorModalTitle"
+          (click)="$event.stopPropagation()"
+        >
           <button
-        type="button"
-        class="modal-close"
-        aria-label="إغلاق"
-        (click)="closeInstructorModal(); $event.stopPropagation()"
-      >
-  <i class="fa-solid fa-xmark"></i>
-</button>
+            type="button"
+            class="modal-close"
+            aria-label="إغلاق"
+            (click)="closeInstructorModal(); $event.stopPropagation()"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+
           <div class="modal-image">
             <img
-              src="/assets/images/waleed-elsisi-reference.jpg"
+              src="/assets/images/instructor.jpg"
               alt="وليد السيسي"
             />
           </div>
