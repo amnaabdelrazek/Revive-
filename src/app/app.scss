@@ -11,3 +11,42 @@
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;
 }
+
+.whatsapp-contact {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.whatsapp-contact:hover {
+  background: #1ebe5d;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.whatsapp-contact__icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: currentColor;
+}
+
+@media (max-width: 576px) {
+  .whatsapp-contact {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+  }
+}
