@@ -274,6 +274,75 @@ a {
   line-height: 1.6;
 }
 
+.company-section {
+  padding-block: 42px;
+  scroll-margin-top: 76px;
+}
+
+.company-heading {
+  margin-bottom: 24px;
+  text-align: center;
+
+  span {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #4f9eff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  h2 {
+    margin: 0;
+    color: #f4f8ff;
+    font-size: clamp(26px, 3vw, 34px);
+
+    b {
+      color: #4f9eff;
+    }
+  }
+}
+
+.company-card {
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid rgba(79, 158, 255, 0.2);
+  border-radius: 22px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(18px, 3vw, 32px);
+  align-items: start;
+  background: linear-gradient(135deg, rgba(16, 34, 62, 0.94), rgba(8, 17, 31, 0.94));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+}
+
+.company-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #07111f;
+  background: linear-gradient(135deg, #75b4ff, #3389ff);
+  font-size: 24px;
+}
+
+.company-copy {
+  color: #c8d4e8;
+  font-size: 15px;
+  line-height: 2;
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 14px;
+  }
+
+  strong {
+    color: #ffffff;
+  }
+}
+
 .journey-section {
   padding-bottom: 75px;
 }
@@ -1131,6 +1200,28 @@ a {
 
 
 @media (max-width: 650px) {
+  .company-section {
+    padding-block: 32px;
+  }
+
+  .company-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    border-radius: 16px;
+  }
+
+  .company-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 20px;
+  }
+
+  .company-copy {
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
   .journey-section {
     padding-block: 36px 20px;
 
