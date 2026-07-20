@@ -137,74 +137,20 @@
             <p>لا يوجد جلسات حتى الآن</p>
           </div>
         } @else {
+        <button type="button" class="individual-booking-btn" (click)="openIndividualTicketPopup()">
+          <i class="fa-solid fa-user"></i>
+          احجز جلسة فردية
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
         <div class="tickets">
 @for (session of sessions; track session.selectionKey) {
-              <button
-              type="button"
-              class="ticket"
-[class.selected]="selectedSessionKey === session.selectionKey"
-              (click)="selectSession(session)"
-            >
-              <span class="ticket-date">
-                <small>{{ session.day }}</small>
-                <strong>{{ session.date }}</strong>
-                <em>{{ session.time }}</em>
-              </span>
-
-              <span class="ticket-cut" aria-hidden="true"></span>
-
-              <span class="ticket-info">
-                <span class="ticket-topline">
-                  <span class="availability">
-                    <i class="fa-solid fa-circle"></i>
-                    {{ session.availability }}
-                  </span>
-
-                  <span
-                    class="ticket-category"
-                    [class.available]="session.category === 'available'"
-                    [class.upcoming]="session.category === 'upcoming'"
-                    [class.paid]="session.category === 'paid'"
-                  >
-                    {{ session.categoryLabel }}
-                  </span>
-                </span>
-
-                <strong>{{ session.specialist }}</strong>
-
-                <small>
-                  <i class="fa-solid fa-video"></i>
-                  {{ session.type }}
-                  <b></b>
-                  <i class="fa-regular fa-clock"></i>
-                  {{ session.duration }}
-                </small>
-
-                <span class="price-line">
-                  <span>سعر الجلسة</span>
-                  <strong>{{ session.price }}</strong>
-                </span>
-
-                @if (session.type !== 'جلسة فردية') {
-                  <span class="seats-line">
-                    <span>المقاعد المكتملة</span>
-                    <strong dir="ltr">
-                      {{ session.seatsReserved }}/{{ session.seatsTotal }}
-                    </strong>
-                  </span>
-
-                  <span class="seat-progress" aria-hidden="true">
-                    <span [style.width.%]="getSeatPercent(session)"></span>
-                  </span>
-                }
-              </span>
-
-@if (selectedSessionKey === session.selectionKey) {
-                  <i class="fa-solid fa-circle-check selection-icon"></i>
-              } @else {
-                <i class="fa-regular fa-circle selection-icon"></i>
-              }
-            </button>
+  <app-ticket
+    [ticket]="toTicketData(session)"
+    [selected]="selectedSessionKey === session.selectionKey"
+    [showSelection]="true"
+    (select)="selectSession(session)"
+  ></app-ticket>
           }
         </div>
         }
@@ -424,6 +370,46 @@
             <i class="fa-solid fa-paper-plane"></i>
           </button>
         }
+      </section>
+    </div>
+  }
+
+  @if (individualTicketPopupOpen && individualTicketData) {
+    <div class="modal-backdrop" (click)="closeIndividualTicketPopup()">
+      <section
+        class="profile-modal booking-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="تفاصيل الجلسة الفردية"
+        (click)="$event.stopPropagation()"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeIndividualTicketPopup()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-heading">
+          <span>
+            <i class="fa-solid fa-user"></i>
+            جلسة فردية
+          </span>
+
+          <h2>تفاصيل الجلسة الفردية</h2>
+
+          <p>جلسة خاصة ومخصصة لك مع أحد متخصصينا</p>
+        </div>
+
+        <div class="individual-ticket-wrapper">
+          <app-ticket
+            [ticket]="individualTicketData"
+            [selected]="true"
+            [showSelection]="false"
+          ></app-ticket>
+        </div>
+
+        <button type="button" class="send-booking" (click)="closeIndividualTicketPopup(); openBookingModal()">
+          احجز وادفع الآن
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
       </section>
     </div>
   }

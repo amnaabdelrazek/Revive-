@@ -1,0 +1,69 @@
+<button
+  type="button"
+  class="ticket"
+  [class.selected]="selected"
+  (click)="select.emit()"
+>
+  <span class="ticket-date">
+    <small>{{ ticket.day }}</small>
+    <strong>{{ ticket.date }}</strong>
+    <em>{{ ticket.time }}</em>
+  </span>
+
+  <span class="ticket-cut" aria-hidden="true"></span>
+
+  <span class="ticket-info">
+    <span class="ticket-topline">
+      <span class="availability">
+        <i class="fa-solid fa-circle"></i>
+        {{ ticket.availability }}
+      </span>
+
+      <span
+        class="ticket-category"
+        [class.available]="ticket.category === 'available'"
+        [class.upcoming]="ticket.category === 'upcoming'"
+        [class.paid]="ticket.category === 'paid'"
+      >
+        {{ ticket.categoryLabel }}
+      </span>
+    </span>
+
+    <strong>{{ ticket.specialist }}</strong>
+
+    <small>
+      <i class="fa-solid fa-video"></i>
+      {{ ticket.type }}
+      <b></b>
+      <i class="fa-regular fa-clock"></i>
+      {{ ticket.duration }}
+    </small>
+
+    <span class="price-line">
+      <span>سعر الجلسة</span>
+      <strong>{{ ticket.price }}</strong>
+    </span>
+
+    @if (!isIndividual) {
+      <span class="seats-line">
+        <span>المقاعد المكتملة</span>
+        <strong dir="ltr">
+          {{ ticket.seatsReserved }}/{{ ticket.seatsTotal }}
+        </strong>
+      </span>
+
+      <span class="seat-progress" aria-hidden="true">
+        <span [style.width.%]="getSeatPercent()"></span>
+      </span>
+    }
+  </span>
+
+  @if (showSelection) {
+    @if (selected) {
+      <i class="fa-solid fa-circle-check selection-icon"></i>
+    } @else {
+      <i class="fa-regular fa-circle selection-icon"></i>
+    }
+  }
+</button>
+

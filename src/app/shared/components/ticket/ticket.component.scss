@@ -1,0 +1,202 @@
+.ticket {
+  position: relative;
+  width: 100%;
+  min-height: 145px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #19395f;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 112px 1px 1fr 32px;
+  align-items: stretch;
+  color: #f4ede2;
+  background: #060d16;
+  text-align: right;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font: inherit;
+}
+
+.ticket:hover:not(:disabled),
+.ticket.selected {
+  border-color: #3189ff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 73, 182, 0.18);
+}
+
+.ticket.selected {
+  background: #081526;
+}
+
+.ticket-date {
+  padding: 19px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.ticket-date small {
+  color: #3d92ff;
+  font-size: 11px;
+}
+
+.ticket-date strong {
+  margin: 4px 0;
+  font-size: 16px;
+}
+
+.ticket-date em {
+  color: #929baa;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.ticket-cut {
+  position: relative;
+  border-right: 1px dashed #28517d;
+}
+
+.ticket-cut::before,
+.ticket-cut::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #19395f;
+  border-radius: 50%;
+  background: #02070d;
+}
+
+.ticket-cut::before {
+  top: -8px;
+}
+
+.ticket-cut::after {
+  bottom: -8px;
+}
+
+.ticket-info {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ticket-topline,
+.price-line,
+.seats-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.availability {
+  color: #43c989;
+  font-size: 10px;
+}
+
+.availability i {
+  font-size: 6px;
+}
+
+.ticket-category {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.ticket-category.available {
+  color: #46d699;
+  background: rgba(67, 201, 137, 0.12);
+}
+
+.ticket-category.upcoming {
+  color: #54a2ff;
+  background: rgba(49, 137, 255, 0.14);
+}
+
+.ticket-category.paid {
+  color: #f5b83d;
+  background: rgba(233, 169, 0, 0.13);
+}
+
+.ticket-info > strong {
+  margin: 7px 0;
+  font-size: 14px;
+}
+
+.ticket-info > small {
+  color: #8994a5;
+  font-size: 10px;
+}
+
+.ticket-info b {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin: 0 6px;
+  border-radius: 50%;
+  background: #536174;
+}
+
+.price-line {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border: 1px solid #1a3a61;
+  border-radius: 7px;
+  color: #8793a5;
+  background: #071322;
+  font-size: 10px;
+}
+
+.price-line strong {
+  color: #f5b83d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.seats-line {
+  margin-top: 12px;
+  color: #8793a5;
+  font-size: 10px;
+}
+
+.seats-line strong {
+  color: #f5eee2;
+  font-size: 11px;
+}
+
+.seat-progress {
+  height: 6px;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #111d2c;
+}
+
+.seat-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #246fef, #43d294);
+}
+
+.selection-icon {
+  align-self: center;
+  color: #3189ff;
+  font-size: 17px;
+}
+
+.ticket.unavailable {
+  opacity: 0.46;
+  cursor: not-allowed;
+}
+
+.ticket.unavailable .availability {
+  color: #ff6b6b;
+}
+
