@@ -11,7 +11,7 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [NoAuthGuard] },
-  { path: 'verify', component: VerifyComponent, canActivate: [NoAuthGuard] },
+  // { path: 'verify', component: VerifyComponent, canActivate: [NoAuthGuard] },
   { path: 'user-profile', component: UserProfile },
   { path: 'home', redirectTo: '', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
