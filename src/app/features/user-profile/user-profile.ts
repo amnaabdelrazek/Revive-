@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, SessionApiResponse, UserApiProfileBody } from '../../core/services/auth.service';
+import { TicketComponent, TicketData } from '../../shared/components/ticket/ticket.component';
 import { forkJoin } from 'rxjs';
 
 interface ProfileData {
@@ -34,6 +35,7 @@ interface RecoverySession {
   category: 'available' | 'upcoming' | 'paid';
   categoryLabel: string;
 }
+
 interface SessionTicket {
   id: number;
   day: string;
@@ -49,7 +51,7 @@ interface SessionTicket {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TicketComponent],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss',
 })
@@ -77,20 +79,23 @@ export class UserProfile implements OnInit {
   upcomingHistoryTickets: SessionTicket[] = [];
   hasNoSessions = false;
 
-selectedSessionKey: string | null = null;
-bookingConfirmed = false;
+  selectedSessionKey: string | null = null;
+  bookingConfirmed = false;
   historyOpen = false;
   activeHistoryTab: 'attended' | 'upcoming' = 'attended';
   bookingModalOpen = false;
-historyLoading = false;
-historyError = '';
+  historyLoading = false;
+  historyError = '';
   senderName = '';
   whatsappNumber = '';
   instapayImage = '/assets/images/instapay.jpeg';
   instapayLink = 'https://ipn.eg/S/hokhalifa94/instapay/5WPolw';
+  individualTicketPopupOpen = false;
+  individualTicketData: TicketData | null = null;
+  individualTicketEmpty = false;
 
   get selectedSession(): RecoverySession | undefined {
-  return this.sessions.find((session) => session.selectionKey === this.selectedSessionKey);
+    return this.sessions.find((session) => session.selectionKey === this.selectedSessionKey);
   }
 
   get paidTickets(): SessionTicket[] {
@@ -141,11 +146,11 @@ historyError = '';
         this.sessions = this.mapSessions(mergedSessions);
         this.hasNoSessions = this.sessions.length === 0;
 
-       if (this.sessions.length) {
-  this.selectedSessionKey = this.sessions[0].selectionKey;
-} else {
-  this.selectedSessionKey = null;
-}
+        if (this.sessions.length) {
+          this.selectedSessionKey = this.sessions[0].selectionKey;
+        } else {
+          this.selectedSessionKey = null;
+        }
 
         this.cdr.markForCheck();
         this.cdr.detectChanges();
@@ -164,13 +169,26 @@ historyError = '';
   }
 
   selectSession(session: RecoverySession): void {
-  // if (!session.available || session.category === 'paid') {
-  //   return;
-  // }
+    this.selectedSessionKey = session.selectionKey;
+    this.bookingConfirmed = false;
+  }
 
-  this.selectedSessionKey = session.selectionKey;
-  this.bookingConfirmed = false;
-}
+  toTicketData(session: RecoverySession): TicketData {
+    return {
+      day: session.day,
+      date: session.date,
+      time: session.time,
+      specialist: session.specialist,
+      type: session.type,
+      duration: session.duration,
+      price: session.price,
+      availability: session.availability,
+      category: session.category,
+      categoryLabel: session.categoryLabel,
+      seatsReserved: session.seatsReserved,
+      seatsTotal: session.seatsTotal,
+    };
+  }
 
   getSeatPercent(session: RecoverySession): number {
     if (!session.seatsTotal) {
@@ -191,35 +209,35 @@ historyError = '';
   }
 
   loadHistorySessions(): void {
-  this.historyLoading = true;
-  this.historyError = '';
+    this.historyLoading = true;
+    this.historyError = '';
 
-  forkJoin({
-    attended: this.authService.getAttendedSessions(),
-    upcoming: this.authService.getUpcomingSessions(),
-  }).subscribe({
-    next: ({ attended, upcoming }) => {
-      this.attendedHistoryTickets = this.mapHistoryTickets(attended);
-      this.upcomingHistoryTickets = this.mapHistoryTickets(upcoming);
-      this.historyTickets = [
-        ...this.attendedHistoryTickets,
-        ...this.upcomingHistoryTickets,
-      ];
-      this.historyLoading = false;
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
-    },
-    error: () => {
-      this.historyTickets = [];
-      this.attendedHistoryTickets = [];
-      this.upcomingHistoryTickets = [];
-      this.historyLoading = false;
-      this.historyError = 'تعذر تحميل سجل الجلسات';
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
-    },
-  });
-}
+    forkJoin({
+      attended: this.authService.getAttendedSessions(),
+      upcoming: this.authService.getUpcomingSessions(),
+    }).subscribe({
+      next: ({ attended, upcoming }) => {
+        this.attendedHistoryTickets = this.mapHistoryTickets(attended);
+        this.upcomingHistoryTickets = this.mapHistoryTickets(upcoming);
+        this.historyTickets = [
+          ...this.attendedHistoryTickets,
+          ...this.upcomingHistoryTickets,
+        ];
+        this.historyLoading = false;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.historyTickets = [];
+        this.attendedHistoryTickets = [];
+        this.upcomingHistoryTickets = [];
+        this.historyLoading = false;
+        this.historyError = 'تعذر تحميل سجل الجلسات';
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+    });
+  }
 
   closeHistory(): void {
     this.historyOpen = false;
@@ -245,6 +263,108 @@ historyError = '';
     }
 
     this.bookingConfirmed = true;
+  }
+
+  openIndividualTicketPopup(): void {
+    this.individualTicketPopupOpen = true;
+    this.individualTicketEmpty = false;
+    this.individualTicketData = {
+      day: 'جاري التحميل...',
+      date: '---',
+      time: '---',
+      specialist: 'فريق Revive',
+      type: 'جلسة فردية',
+      duration: '---',
+      price: '---',
+      availability: 'جاري التحميل...',
+      category: 'available',
+      categoryLabel: 'متاح',
+      seatsReserved: 0,
+      seatsTotal: 0,
+    };
+
+    this.authService.getIndividualSessions().subscribe({
+      next: (response) => {
+        const sessions = response?.body?.sessions ?? [];
+        if (sessions.length > 0) {
+          const session = sessions[0];
+          const day = this.formatSessionDay(session.date);
+          const date = this.formatSessionDate(session.date);
+          const time = this.formatSessionTime(session.time);
+          const isFinished = session.status === 'finished' || session.status === 'completed' || session.status === 'cancelled';
+          const isAvailable = !isFinished && !session.is_full && !session.is_locked && !session.is_booked;
+
+          let category: 'available' | 'upcoming' | 'paid' = 'paid';
+          let categoryLabel = 'مكتمل';
+
+          if (session.status === 'upcoming' || session.status === 'scheduled') {
+            category = 'upcoming';
+            categoryLabel = 'قادم';
+          } else if (isAvailable) {
+            category = 'available';
+            categoryLabel = 'متاح';
+          }
+
+          this.individualTicketData = {
+            day,
+            date,
+            time,
+            specialist: session.instructor_name || 'فريق Revive',
+            type: 'جلسة فردية',
+            duration: `${session.duration_minutes ?? 0} دقيقة`,
+            price: session.formatted_price || `${session.price} ج.م`,
+            availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
+            category,
+            categoryLabel,
+            seatsReserved: session.current_participants ?? 0,
+            seatsTotal: session.max_participants ?? session.session_metadata?.max_participants ?? 0,
+          };
+          this.individualTicketEmpty = false;
+        } else {
+          this.individualTicketData = {
+            day: '---',
+            date: '---',
+            time: '---',
+            specialist: 'فريق Revive',
+            type: 'جلسة فردية',
+            duration: '---',
+            price: '---',
+            availability: 'لا توجد جلسات فردية متاحة حالياً',
+            category: 'available',
+            categoryLabel: 'متاح',
+            seatsReserved: 0,
+            seatsTotal: 0,
+          };
+          this.individualTicketEmpty = true;
+        }
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.individualTicketData = {
+          day: '---',
+          date: '---',
+          time: '---',
+          specialist: 'فريق Revive',
+          type: 'جلسة فردية',
+          duration: '---',
+          price: '---',
+          availability: 'تعذر التحميل',
+          category: 'available',
+          categoryLabel: 'متاح',
+          seatsReserved: 0,
+          seatsTotal: 0,
+        };
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  closeIndividualTicketPopup(): void {
+    this.individualTicketPopupOpen = false;
+    this.individualTicketData = null;
+    this.individualTicketEmpty = false;
   }
 
   logout(): void {
@@ -478,77 +598,77 @@ historyError = '';
     };
   }
 
- private mapSessions(response: SessionApiResponse): RecoverySession[] {
-  return (response?.body?.sessions ?? []).map((session, index) => {
-    const status = session.status?.toLowerCase();
-    const isFinished = status === 'finished' || status === 'completed' || status === 'cancelled';
-    const isAvailable = !isFinished && !session.is_full && !session.is_locked && !session.is_booked;
+  private mapSessions(response: SessionApiResponse): RecoverySession[] {
+    return (response?.body?.sessions ?? []).map((session, index) => {
+      const status = session.status?.toLowerCase();
+      const isFinished = status === 'finished' || status === 'completed' || status === 'cancelled';
+      const isAvailable = !isFinished && !session.is_full && !session.is_locked && !session.is_booked;
 
-    let category: RecoverySession['category'] = 'paid';
-    let categoryLabel = 'مكتمل';
+      let category: RecoverySession['category'] = 'paid';
+      let categoryLabel = 'مكتمل';
 
-    if (status === 'upcoming' || status === 'scheduled') {
-      category = 'upcoming';
-      categoryLabel = 'قادم';
-    } else if (isAvailable) {
-      category = 'available';
-      categoryLabel = 'متاح';
-    }
+      if (status === 'upcoming' || status === 'scheduled') {
+        category = 'upcoming';
+        categoryLabel = 'قادم';
+      } else if (isAvailable) {
+        category = 'available';
+        categoryLabel = 'متاح';
+      }
 
-    return {
-      id: session.id,
-      selectionKey: `${session.id}-${index}`,
-      day: this.formatSessionDay(session.date),
-      date: this.formatSessionDate(session.date),
-      time: this.formatSessionTime(session.time),
-      specialist: session.instructor_name || 'فريق Revive',
-      type: session.session_type === 'group' ? 'جلسة جماعية' : 'جلسة فردية',
-      duration: `${session.duration_minutes ?? 0} دقيقة`,
-      price: session.formatted_price || `${session.price} ج.م`,
-      availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
-      available: isAvailable,
-      seatsReserved: session.current_participants ?? 0,
-      seatsTotal: session.max_participants ?? session.session_metadata?.max_participants ?? 0,
-      category,
-      categoryLabel,
-    };
-  });
-}
+      return {
+        id: session.id,
+        selectionKey: `${session.id}-${index}`,
+        day: this.formatSessionDay(session.date),
+        date: this.formatSessionDate(session.date),
+        time: this.formatSessionTime(session.time),
+        specialist: session.instructor_name || 'فريق Revive',
+        type: session.session_type === 'group' ? 'جلسة جماعية' : 'جلسة فردية',
+        duration: `${session.duration_minutes ?? 0} دقيقة`,
+        price: session.formatted_price || `${session.price} ج.م`,
+        availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
+        available: isAvailable,
+        seatsReserved: session.current_participants ?? 0,
+        seatsTotal: session.max_participants ?? session.session_metadata?.max_participants ?? 0,
+        category,
+        categoryLabel,
+      };
+    });
+  }
 
   private mapHistoryTickets(response: SessionApiResponse): SessionTicket[] {
-  return (response?.body?.sessions ?? []).map((session) => {
-    const status = session.status?.toLowerCase();
+    return (response?.body?.sessions ?? []).map((session) => {
+      const status = session.status?.toLowerCase();
 
-    let ticketStatus: SessionTicket['status'] = 'available';
-    let statusLabel = 'جارية الان';
+      let ticketStatus: SessionTicket['status'] = 'available';
+      let statusLabel = 'جارية الان';
 
-    if (status === 'finished' || status === 'completed') {
-      ticketStatus = 'finished';
-      statusLabel = 'تمت الجلسة';
-    } else if (status === 'cancelled') {
-      ticketStatus = 'cancelled';
-      statusLabel = 'ملغية';
-    } else if (session.is_booked) {
-      ticketStatus = 'paid';
-      statusLabel = 'محجوزة';
-    } else if (status === 'upcoming' || status === 'scheduled') {
-      ticketStatus = 'upcoming';
-      statusLabel = 'جلسة قادمة';
-    }
+      if (status === 'finished' || status === 'completed') {
+        ticketStatus = 'finished';
+        statusLabel = 'تمت الجلسة';
+      } else if (status === 'cancelled') {
+        ticketStatus = 'cancelled';
+        statusLabel = 'ملغية';
+      } else if (session.is_booked) {
+        ticketStatus = 'paid';
+        statusLabel = 'محجوزة';
+      } else if (status === 'upcoming' || status === 'scheduled') {
+        ticketStatus = 'upcoming';
+        statusLabel = 'جلسة قادمة';
+      }
 
-    return {
-      id: session.id,
-      day: this.formatSessionDay(session.date),
-      date: this.formatSessionDate(session.date),
-      time: this.formatSessionTime(session.time),
-      specialist: session.instructor_name || 'فريق Revive',
-      type: session.session_type === 'group' ? 'جلسة جماعية' : 'جلسة فردية',
-      status: ticketStatus,
-      statusLabel,
-      amount: session.formatted_price || `${session.price} ج.م`,
-    };
-  });
-}
+      return {
+        id: session.id,
+        day: this.formatSessionDay(session.date),
+        date: this.formatSessionDate(session.date),
+        time: this.formatSessionTime(session.time),
+        specialist: session.instructor_name || 'فريق Revive',
+        type: session.session_type === 'group' ? 'جلسة جماعية' : 'جلسة فردية',
+        status: ticketStatus,
+        statusLabel,
+        amount: session.formatted_price || `${session.price} ج.م`,
+      };
+    });
+  }
 
   private formatSessionDay(value: string): string {
     const parsed = this.parseDate(value);
