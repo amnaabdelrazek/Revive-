@@ -293,7 +293,7 @@
           aria-controls="attended-history"
           (click)="selectHistoryTab('attended')"
         >
-          تم حضورها
+          المدفوعة
         </button>
       </li>
 
@@ -319,7 +319,7 @@
     >
       @if (activeHistoryTab === 'attended' && !attendedHistoryTickets.length) {
         <div class="empty-state">
-          <p>لا توجد محاضرات تم حضورها حتي الان</p>
+          <p>لا توجد جلسات مدفوعة حتى الآن</p>
         </div>
       } @else if (activeHistoryTab === 'upcoming' && !upcomingHistoryTickets.length) {
         <div class="empty-state">

@@ -724,22 +724,23 @@ export class UserProfile implements OnInit {
   private mapHistoryTickets(response: SessionApiResponse): SessionTicket[] {
     return (response?.body?.sessions ?? []).map((session) => {
       const status = session.status?.toLowerCase();
+      const attendance = (session as any).attendance_status || (session as any).attendance?.status;
 
-      let ticketStatus: SessionTicket['status'] = 'available';
-      let statusLabel = 'جارية الان';
+      let ticketStatus: SessionTicket['status'] = 'paid';
+      let statusLabel = 'جلسة مدفوعة';
 
       if (status === 'finished' || status === 'completed') {
         ticketStatus = 'finished';
-        statusLabel = 'تمت الجلسة';
+        statusLabel = attendance === 'absent' ? 'لم يتم الحضور (مدفوعة)' : 'تمت الجلسة (مدفوعة)';
       } else if (status === 'cancelled') {
         ticketStatus = 'cancelled';
         statusLabel = 'ملغية';
-      } else if (session.is_booked) {
-        ticketStatus = 'paid';
-        statusLabel = 'محجوزة';
       } else if (status === 'upcoming' || status === 'scheduled') {
         ticketStatus = 'upcoming';
-        statusLabel = 'جلسة قادمة';
+        statusLabel = 'قادمة (مدفوعة)';
+      } else if (session.is_booked) {
+        ticketStatus = 'paid';
+        statusLabel = 'جلسة مدفوعة';
       }
 
       return {
