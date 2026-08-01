@@ -199,7 +199,9 @@ export class AuthService {
   }
 
 getSessionsHistory(): Observable<SessionApiResponse> {
-  return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions`);
+  const token = this.getAuthToken();
+  const headers = this.buildAuthHeaders(token);
+  return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions`, { headers });
 }
 
   getIndividualSessions(): Observable<SessionApiResponse> {

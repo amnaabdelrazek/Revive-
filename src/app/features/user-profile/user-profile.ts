@@ -290,14 +290,24 @@ export class UserProfile implements OnInit {
     forkJoin({
       attended: this.authService.getAttendedSessions(),
       upcoming: this.authService.getUpcomingSessions(),
+      history: this.authService.getSessionsHistory(),
     }).subscribe({
-      next: ({ attended, upcoming }) => {
-        this.attendedHistoryTickets = this.mapHistoryTickets(attended);
-        this.upcomingHistoryTickets = this.mapHistoryTickets(upcoming);
-        this.historyTickets = [
-          ...this.attendedHistoryTickets,
-          ...this.upcomingHistoryTickets,
-        ];
+      next: ({ attended, upcoming, history }) => {
+        const attendedMapped = this.mapHistoryTickets(attended);
+        const upcomingMapped = this.mapHistoryTickets(upcoming);
+        const historyMapped = this.mapHistoryTickets(history);
+
+        const ticketsMap = new Map<number, SessionTicket>();
+        [...attendedMapped, ...upcomingMapped, ...historyMapped].forEach((ticket) => {
+          ticketsMap.set(ticket.id, ticket);
+        });
+
+        const allPaid = Array.from(ticketsMap.values());
+
+        this.attendedHistoryTickets = allPaid;
+        this.upcomingHistoryTickets = upcomingMapped;
+        this.historyTickets = allPaid;
+
         this.historyLoading = false;
         this.cdr.markForCheck();
         this.cdr.detectChanges();
