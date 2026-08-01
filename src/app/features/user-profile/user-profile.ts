@@ -385,7 +385,10 @@ export class UserProfile implements OnInit {
           const date = this.formatSessionDate(session.date);
           const time = this.formatSessionTime(session.time);
           const isFinished = session.status === 'finished' || session.status === 'completed' || session.status === 'cancelled';
-          const isAvailable = !isFinished && !session.is_full && !session.is_booked;
+          const currentParticipants = session.current_participants ?? 0;
+          const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 1;
+          const isFull = !!session.is_full || (maxParticipants > 0 && currentParticipants >= maxParticipants);
+          const isAvailable = !isFinished && !isFull && !session.is_booked;
 
           let category: 'available' | 'upcoming' | 'paid' = 'paid';
           let categoryLabel = 'مكتمل';
@@ -398,13 +401,10 @@ export class UserProfile implements OnInit {
             categoryLabel = 'متاح';
           }
 
-          const currentParticipants = session.current_participants ?? 0;
-          const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 1;
-
           this.individualTicketData = {
             sessionNumber: session.session_number,
             title: session.title || session.session_metadata?.title || 'جلسة فردية',
-            isFull: !!session.is_full,
+            isFull,
             currentParticipants: currentParticipants,
             maxParticipants: maxParticipants,
             day,
@@ -414,7 +414,7 @@ export class UserProfile implements OnInit {
             type: 'جلسة فردية',
             duration: `${session.duration_minutes ?? 0} دقيقة`,
             price: session.formatted_price || `${session.price} ج.م`,
-            availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
+            availability: isFinished ? 'انتهت' : isFull ? 'مكتمل' : 'متاح للحجز',
             category,
             categoryLabel,
             seatsReserved: currentParticipants,
@@ -707,7 +707,9 @@ export class UserProfile implements OnInit {
     return (response?.body?.sessions ?? []).map((session, index) => {
       const status = session.status?.toLowerCase();
       const isFinished = status === 'finished' || status === 'completed' || status === 'cancelled';
-      const isFull = !!session.is_full;
+      const currentParticipants = session.current_participants ?? 0;
+      const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 0;
+      const isFull = !!session.is_full || (maxParticipants > 0 && currentParticipants >= maxParticipants);
       const isAvailable = !isFinished && !isFull && !session.is_booked;
 
       let category: RecoverySession['category'] = 'paid';
@@ -720,9 +722,6 @@ export class UserProfile implements OnInit {
         category = 'available';
         categoryLabel = 'متاح';
       }
-
-      const currentParticipants = session.current_participants ?? 0;
-      const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 0;
 
       return {
         id: session.id,

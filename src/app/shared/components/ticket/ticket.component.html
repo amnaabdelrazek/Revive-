@@ -3,6 +3,7 @@
   class="ticket"
   [class.selected]="selected"
   [class.is-full]="ticket.isFull"
+  [class.unavailable]="ticket.isFull || !ticket.available"
   [disabled]="ticket.isFull || !ticket.available"
   (click)="select.emit()"
 >
