@@ -263,7 +263,7 @@ export class UserProfile implements OnInit {
       price: session.price,
       availability: session.availability,
       category: session.category,
-      categoryLabel: session.categoryLabel,
+      available: session.available,
       seatsReserved: session.seatsReserved,
       seatsTotal: session.seatsTotal,
     };

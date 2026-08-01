@@ -3,7 +3,7 @@
   class="ticket"
   [class.selected]="selected"
   [class.is-full]="ticket.isFull"
-  [disabled]="ticket.isFull"
+  [disabled]="ticket.isFull || !ticket.available"
   (click)="select.emit()"
 >
   <span class="ticket-date">
