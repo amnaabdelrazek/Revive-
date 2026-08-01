@@ -10,6 +10,7 @@ export interface TicketData {
   price: string;
   availability: string;
   category: string;
+  categoryLabel: string;
   available: boolean;
   seatsReserved: number;
   seatsTotal: number;
