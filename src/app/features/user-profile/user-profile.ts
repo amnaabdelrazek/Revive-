@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 
 interface ProfileData {
   name: string;
+  avatarUrl?: string | null;
   email: string;
   phone: string;
   drugType: string;
@@ -93,6 +94,46 @@ export class UserProfile implements OnInit {
   individualTicketPopupOpen = false;
   individualTicketData: TicketData | null = null;
   individualTicketEmpty = false;
+
+  isUploadingAvatar = false;
+  avatarUploadError = '';
+  avatarUploadSuccess = '';
+
+  onAvatarFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) {
+      return;
+    }
+
+    const file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert('حجم الصورة يجب ألا يتجاوز 5 ميجابايت.');
+      return;
+    }
+
+    this.isUploadingAvatar = true;
+    this.avatarUploadError = '';
+    this.avatarUploadSuccess = '';
+
+    this.authService.uploadAvatar(file).subscribe({
+      next: (response) => {
+        this.isUploadingAvatar = false;
+        const relativeUrl = response?.body?.avatar_url || response?.avatar_url;
+        if (relativeUrl) {
+          this.profile.avatarUrl = relativeUrl;
+          this.avatarUploadSuccess = 'تمت تحديث الصورة بنجاح!';
+        }
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isUploadingAvatar = false;
+        this.avatarUploadError = err.error?.message || 'حدث خطأ أثناء رفع الصورة.';
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   get selectedSession(): RecoverySession | undefined {
     return this.sessions.find((session) => session.selectionKey === this.selectedSessionKey);
@@ -380,6 +421,7 @@ export class UserProfile implements OnInit {
 
     this.profile = {
       name: profileData?.display_name || storedData?.display_name || 'مستخدم',
+      avatarUrl: profileData?.avatar_url || null,
       email: profileData?.email || '',
       phone: profileData?.mobile_number || storedData?.mobile_number || '',
       drugType: substanceLabel,

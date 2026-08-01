@@ -24,8 +24,18 @@
 
   <main class="profile-shell">
     <section class="profile-hero">
-      <div class="avatar" aria-hidden="true">
-        {{ profile.name.charAt(0) }}
+      <div class="avatar-upload-wrapper" style="position: relative; display: inline-block;">
+        <div class="avatar" aria-hidden="true" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          @if (profile.avatarUrl) {
+            <img [src]="profile.avatarUrl.startsWith('http') ? profile.avatarUrl : ('http://solid.runasp.net' + profile.avatarUrl)" alt="Profile Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          } @else {
+            {{ profile.name.charAt(0) }}
+          }
+        </div>
+        <label for="avatarFileInput" class="avatar-upload-trigger" title="تغيير الصورة الشخصية" style="position: absolute; bottom: 0; left: 0; background: #4f46e5; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+          <i class="fa-solid fa-camera" style="font-size: 13px;"></i>
+        </label>
+        <input id="avatarFileInput" type="file" (change)="onAvatarFileSelected($event)" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" />
       </div>
 
       <div class="hero-copy">

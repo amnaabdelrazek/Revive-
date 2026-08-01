@@ -216,6 +216,16 @@ getSessionsHistory(): Observable<SessionApiResponse> {
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/unpaid/group`, { headers });
   }
 
+  uploadAvatar(file: File): Observable<any> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.http.post<any>(`${this.apiBaseUrl}profile/avatar`, formData, { headers });
+  }
+
   saveRegisterData(data: Partial<RegisterData>): void {
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
   }
