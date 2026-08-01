@@ -184,6 +184,20 @@ export class AuthService {
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming`, { headers });
   }
 
+  getUpcomingIndividualSessions(): Observable<SessionApiResponse> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+
+    return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/individual`, { headers });
+  }
+
+  getUpcomingGroupSessions(): Observable<SessionApiResponse> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+
+    return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/group`, { headers });
+  }
+
   getAttendedSessions(): Observable<SessionApiResponse> {
     const token = this.getAuthToken();
     const headers = this.buildAuthHeaders(token);
@@ -198,24 +212,32 @@ export class AuthService {
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/unpaid`, { headers });
   }
 
-getSessionsHistory(): Observable<SessionApiResponse> {
-  const token = this.getAuthToken();
-  const headers = this.buildAuthHeaders(token);
-  return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions`, { headers });
-}
-
-  getIndividualSessions(): Observable<SessionApiResponse> {
+  getUpcomingUnpaidIndividualSessions(): Observable<SessionApiResponse> {
     const token = this.getAuthToken();
     const headers = this.buildAuthHeaders(token);
 
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/unpaid/individual`, { headers });
   }
 
-  getGroupSessions(): Observable<SessionApiResponse> {
+  getUpcomingUnpaidGroupSessions(): Observable<SessionApiResponse> {
     const token = this.getAuthToken();
     const headers = this.buildAuthHeaders(token);
 
     return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions/upcoming/unpaid/group`, { headers });
+  }
+
+  getSessionsHistory(): Observable<SessionApiResponse> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+    return this.http.get<SessionApiResponse>(`${this.apiBaseUrl}sessions`, { headers });
+  }
+
+  getIndividualSessions(): Observable<SessionApiResponse> {
+    return this.getUpcomingUnpaidIndividualSessions();
+  }
+
+  getGroupSessions(): Observable<SessionApiResponse> {
+    return this.getUpcomingUnpaidGroupSessions();
   }
 
   uploadAvatar(file: File): Observable<any> {

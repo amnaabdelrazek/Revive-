@@ -211,8 +211,9 @@ export class UserProfile implements OnInit {
         const availableIndividual = mappedUnpaid.filter(s => s.sessionType === 'individual' && !s.isFull);
         this.hasAvailableIndividualSession = availableIndividual.length > 0;
 
-        if (this.sessions.length) {
-          this.selectedSessionKey = this.sessions[0].selectionKey;
+        const firstAvailable = this.sessions.find(s => s.available && !s.isFull);
+        if (firstAvailable) {
+          this.selectedSessionKey = firstAvailable.selectionKey;
         } else {
           this.selectedSessionKey = null;
         }
@@ -239,6 +240,9 @@ export class UserProfile implements OnInit {
   }
 
   selectSession(session: RecoverySession): void {
+    if (session.isFull || !session.available) {
+      return;
+    }
     this.selectedSessionKey = session.selectionKey;
     this.bookingConfirmed = false;
   }
@@ -329,7 +333,7 @@ export class UserProfile implements OnInit {
   }
 
   openBookingModal(): void {
-    if (!this.selectedSession) {
+    if (!this.selectedSession || this.selectedSession.isFull || !this.selectedSession.available) {
       return;
     }
 
@@ -368,11 +372,12 @@ export class UserProfile implements OnInit {
       seatsTotal: 0,
     };
 
-    this.authService.getIndividualSessions().subscribe({
+    this.authService.getUpcomingUnpaidIndividualSessions().subscribe({
       next: (response) => {
         const sessions = response?.body?.sessions ?? [];
         if (sessions.length > 0) {
-          const session = sessions[0];
+          // Sort by session_number DESC so Session 2 is prioritized over Session 1 if both exist
+          const session = [...sessions].sort((a, b) => (b.session_number ?? 0) - (a.session_number ?? 0))[0];
           const day = this.formatSessionDay(session.date);
           const date = this.formatSessionDate(session.date);
           const time = this.formatSessionTime(session.time);
@@ -390,7 +395,15 @@ export class UserProfile implements OnInit {
             categoryLabel = 'متاح';
           }
 
+          const currentParticipants = session.current_participants ?? 0;
+          const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 1;
+
           this.individualTicketData = {
+            sessionNumber: session.session_number,
+            title: session.title || session.session_metadata?.title || 'جلسة فردية',
+            isFull: !!session.is_full,
+            currentParticipants: currentParticipants,
+            maxParticipants: maxParticipants,
             day,
             date,
             time,
@@ -401,8 +414,8 @@ export class UserProfile implements OnInit {
             availability: isFinished ? 'انتهت' : session.is_full ? 'مكتمل' : 'متاح للحجز',
             category,
             categoryLabel,
-            seatsReserved: session.current_participants ?? 0,
-            seatsTotal: session.max_participants ?? session.session_metadata?.max_participants ?? 0,
+            seatsReserved: currentParticipants,
+            seatsTotal: maxParticipants,
           };
           this.individualTicketEmpty = false;
         } else {

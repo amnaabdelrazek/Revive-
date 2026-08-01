@@ -141,13 +141,15 @@
 
           @if (upcomingIndividualTickets.length > 0 || upcomingGroupTickets.length > 0) {
             <div class="upcoming-sessions-block" style="margin: 16px 0; padding: 16px; background: rgba(79, 70, 229, 0.05); border-radius: 12px; border: 1px solid rgba(79, 70, 229, 0.15);">
-              <h3 style="font-size: 15px; font-weight: 700; color: #4f46e5; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <h3 style="font-size: 15px; font-weight: 700; color: #4f46e5; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
                 <i class="fa-solid fa-calendar-check"></i> جلساتي القادمة المحجوزة
               </h3>
 
               @if (upcomingIndividualTickets.length > 0) {
-                <div class="upcoming-sub-group" style="margin-bottom: 12px;">
-                  <h4 style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px;">الجلسات الفردية القادمة</h4>
+                <div class="upcoming-sub-group">
+                  <h4 style="font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-user-doctor" style="color: #4f46e5;"></i> الجلسات الفردية القادمة
+                  </h4>
                   <div class="tickets-list">
                     @for (ticket of upcomingIndividualTickets; track ticket.id) {
                       <div class="upcoming-ticket-card" style="background: #ffffff; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; border-right: 4px solid #4f46e5; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
@@ -161,9 +163,15 @@
                 </div>
               }
 
+              @if (upcomingIndividualTickets.length > 0 && upcomingGroupTickets.length > 0) {
+                <hr style="border: 0; border-top: 1px dashed rgba(79, 70, 229, 0.25); margin: 12px 0;" />
+              }
+
               @if (upcomingGroupTickets.length > 0) {
                 <div class="upcoming-sub-group">
-                  <h4 style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px;">الجلسات الجماعية القادمة</h4>
+                  <h4 style="font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-users" style="color: #10b981;"></i> الجلسات الجماعية القادمة
+                  </h4>
                   <div class="tickets-list">
                     @for (ticket of upcomingGroupTickets; track ticket.id) {
                       <div class="upcoming-ticket-card" style="background: #ffffff; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; border-right: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
@@ -183,27 +191,27 @@
           <p>اختر الموعد الأنسب لك من الجلسات الجماعية المتاحة.</p>
         </div>
 
-        @if (hasNoSessions) {
-          <div class="empty-state">
-            <p>لا يوجد جلسات جماعية متاحة حالياً</p>
-          </div>
-        } @else {
         <button type="button" class="individual-booking-btn" [disabled]="!hasAvailableIndividualSession" [class.disabled]="!hasAvailableIndividualSession" (click)="openIndividualTicketPopup()">
           <i class="fa-solid fa-user"></i>
           احجز جلسة فردية
           <i class="fa-solid fa-arrow-left"></i>
         </button>
 
-        <div class="tickets">
-@for (session of sessions; track session.selectionKey) {
-  <app-ticket
-    [ticket]="toTicketData(session)"
-    [selected]="selectedSessionKey === session.selectionKey"
-    [showSelection]="true"
-    (select)="selectSession(session)"
-  ></app-ticket>
-          }
-        </div>
+        @if (hasNoSessions) {
+          <div class="empty-state">
+            <p>لا يوجد جلسات جماعية متاحة حالياً</p>
+          </div>
+        } @else {
+          <div class="tickets">
+            @for (session of sessions; track session.selectionKey) {
+              <app-ticket
+                [ticket]="toTicketData(session)"
+                [selected]="selectedSessionKey === session.selectionKey"
+                [showSelection]="true"
+                (select)="selectSession(session)"
+              ></app-ticket>
+            }
+          </div>
         }
 
         <div class="booking-box" [class.confirmed]="bookingConfirmed">
@@ -236,7 +244,7 @@
                 <i class="fa-solid fa-calendar-check"></i>
               </div>
 
-              <button type="button" (click)="openBookingModal()">
+              <button type="button" [disabled]="session.isFull || !session.available" [class.disabled]="session.isFull || !session.available" (click)="openBookingModal()">
                 احجز وادفع الآن
                 <i class="fa-solid fa-arrow-left"></i>
               </button>
