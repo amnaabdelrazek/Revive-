@@ -13,6 +13,11 @@ export interface TicketData {
   categoryLabel: string;
   seatsReserved: number;
   seatsTotal: number;
+  sessionNumber?: number;
+  title?: string;
+  isFull?: boolean;
+  currentParticipants?: number;
+  maxParticipants?: number;
 }
 
 @Component({
@@ -30,6 +35,12 @@ export class TicketComponent {
 
   get isIndividual(): boolean {
     return this.ticket.type === 'جلسة فردية';
+  }
+
+  get availableSeats(): number {
+    const total = this.ticket.maxParticipants ?? this.ticket.seatsTotal ?? 0;
+    const reserved = this.ticket.currentParticipants ?? this.ticket.seatsReserved ?? 0;
+    return Math.max(0, total - reserved);
   }
 
   getSeatPercent(): number {
