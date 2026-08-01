@@ -240,6 +240,7 @@ export class UserProfile implements OnInit {
   }
 
   selectSession(session: RecoverySession): void {
+    console.log('Selecting session', session.id, 'available', session.available, 'isFull', session.isFull);
     if (session.isFull || !session.available) {
       return;
     }
@@ -338,7 +339,7 @@ export class UserProfile implements OnInit {
       return;
     }
 
-    this.senderName = this.profile.name || this.senderName;
+    console.log('openBookingModal called, selectedSession', this.selectedSession);
     this.bookingModalOpen = true;
     this.bookingConfirmed = false;
   }
@@ -371,6 +372,7 @@ export class UserProfile implements OnInit {
       categoryLabel: 'متاح',
       seatsReserved: 0,
       seatsTotal: 0,
+      available: false,
     };
 
     this.authService.getUpcomingUnpaidIndividualSessions().subscribe({
@@ -417,6 +419,7 @@ export class UserProfile implements OnInit {
             categoryLabel,
             seatsReserved: currentParticipants,
             seatsTotal: maxParticipants,
+            available: isAvailable,
           };
           this.individualTicketEmpty = false;
         } else {
@@ -433,6 +436,7 @@ export class UserProfile implements OnInit {
             categoryLabel: 'متاح',
             seatsReserved: 0,
             seatsTotal: 0,
+            available: false,
           };
           this.individualTicketEmpty = true;
         }
@@ -453,6 +457,7 @@ export class UserProfile implements OnInit {
           categoryLabel: 'متاح',
           seatsReserved: 0,
           seatsTotal: 0,
+          available: false,
         };
         this.cdr.markForCheck();
         this.cdr.detectChanges();
