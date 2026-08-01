@@ -385,7 +385,7 @@ export class UserProfile implements OnInit {
           const date = this.formatSessionDate(session.date);
           const time = this.formatSessionTime(session.time);
           const isFinished = session.status === 'finished' || session.status === 'completed' || session.status === 'cancelled';
-          const isAvailable = !isFinished && !session.is_full && !session.is_locked && !session.is_booked;
+          const isAvailable = !isFinished && !session.is_full && !session.is_booked;
 
           let category: 'available' | 'upcoming' | 'paid' = 'paid';
           let categoryLabel = 'مكتمل';
@@ -708,7 +708,7 @@ export class UserProfile implements OnInit {
       const status = session.status?.toLowerCase();
       const isFinished = status === 'finished' || status === 'completed' || status === 'cancelled';
       const isFull = !!session.is_full;
-      const isAvailable = !isFinished && !isFull && !session.is_locked && !session.is_booked;
+      const isAvailable = !isFinished && !isFull && !session.is_booked;
 
       let category: RecoverySession['category'] = 'paid';
       let categoryLabel = 'مكتمل';
