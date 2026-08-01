@@ -449,7 +449,7 @@
     </div>
   }
 
-  @if (individualTicketPopupOpen && individualTicketData) {
+  @if (individualTicketPopupOpen) {
     <div class="modal-backdrop" (click)="closeIndividualTicketPopup()">
       <section
         class="profile-modal booking-modal"
@@ -473,18 +473,37 @@
           <p>جلسة خاصة ومخصصة لك مع أحد متخصصينا</p>
         </div>
 
-        <div class="individual-ticket-wrapper">
-          <app-ticket
-            [ticket]="individualTicketData"
-            [selected]="true"
-            [showSelection]="false"
-          ></app-ticket>
-        </div>
+        @if (individualSessions.length === 0) {
+          <div class="empty-state" style="margin-top: 12px;">
+            <p>لا توجد جلسات فردية متاحة حالياً</p>
+          </div>
+        } @else {
+          <div class="tickets" style="margin-top: 12px;">
+            @for (session of individualSessions; track session.selectionKey) {
+              <app-ticket
+                [ticket]="toTicketData(session)"
+                [selected]="selectedSessionKey === session.selectionKey"
+                [showSelection]="true"
+                (select)="selectSession(session)"
+              ></app-ticket>
+            }
+          </div>
 
-        <button type="button" class="send-booking" (click)="closeIndividualTicketPopup(); openBookingModal()">
-          احجز وادفع الآن
-          <i class="fa-solid fa-arrow-left"></i>
-        </button>
+          @if (selectedSession; as session) {
+            @if (session.sessionType === 'individual') {
+              <button
+                type="button"
+                class="send-booking"
+                [disabled]="session.isFull || !session.available"
+                [class.disabled]="session.isFull || !session.available"
+                (click)="closeIndividualTicketPopup(); openBookingModal()"
+              >
+                احجز وادفع الآن
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+            }
+          }
+        }
       </section>
     </div>
   }

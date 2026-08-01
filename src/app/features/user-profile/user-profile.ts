@@ -100,12 +100,11 @@ export class UserProfile implements OnInit {
   instapayImage = '/assets/images/instapay.jpeg';
   instapayLink = 'https://ipn.eg/S/hokhalifa94/instapay/5WPolw';
   individualTicketPopupOpen = false;
-  individualTicketData: TicketData | null = null;
-  individualTicketEmpty = false;
   hasAvailableIndividualSession = false;
 
   allSessions: RecoverySession[] = [];
   groupSessions: RecoverySession[] = [];
+  individualSessions: RecoverySession[] = [];
   upcomingIndividualTickets: SessionTicket[] = [];
   upcomingGroupTickets: SessionTicket[] = [];
 
@@ -150,7 +149,7 @@ export class UserProfile implements OnInit {
   }
 
   get selectedSession(): RecoverySession | undefined {
-    return this.sessions.find((session) => session.selectionKey === this.selectedSessionKey);
+    return this.allSessions.find((session) => session.selectionKey === this.selectedSessionKey);
   }
 
   get paidTickets(): SessionTicket[] {
@@ -195,22 +194,24 @@ export class UserProfile implements OnInit {
     forkJoin({
       upcoming: this.authService.getUpcomingSessions(),
       unpaid: this.authService.getUpcomingUnpaidSessions(),
+      unpaidIndividual: this.authService.getUpcomingUnpaidIndividualSessions(),
     }).subscribe({
-      next: ({ upcoming, unpaid }) => {
+      next: ({ upcoming, unpaid, unpaidIndividual }) => {
         const mappedUpcoming = this.mapHistoryTickets(upcoming);
         this.upcomingIndividualTickets = mappedUpcoming.filter(t => t.type === 'جلسة فردية');
         this.upcomingGroupTickets = mappedUpcoming.filter(t => t.type === 'جلسة جماعية');
 
-        const mappedUnpaid = this.mapSessions(unpaid);
+        const mappedUnpaid = this.mapSessions(this.mergeSessions(unpaid, unpaidIndividual));
         this.allSessions = mappedUnpaid;
 
         // Filter group sessions ONLY for main sessions display
         this.groupSessions = mappedUnpaid.filter(s => s.sessionType === 'group');
         this.sessions = this.groupSessions;
+        this.individualSessions = mappedUnpaid.filter(s => s.sessionType === 'individual');
         this.hasNoSessions = this.sessions.length === 0;
 
         // Check availability for individual sessions button
-        const availableIndividual = mappedUnpaid.filter(s => s.sessionType === 'individual' && !s.isFull);
+        const availableIndividual = this.individualSessions.filter(s => !s.isFull);
         this.hasAvailableIndividualSession = availableIndividual.length > 0;
 
         const firstAvailable = this.sessions.find(s => s.available && !s.isFull);
@@ -227,6 +228,7 @@ export class UserProfile implements OnInit {
         this.sessions = [];
         this.groupSessions = [];
         this.allSessions = [];
+        this.individualSessions = [];
         this.upcomingIndividualTickets = [];
         this.upcomingGroupTickets = [];
         this.historyTickets = [];
@@ -360,117 +362,15 @@ export class UserProfile implements OnInit {
 
   openIndividualTicketPopup(): void {
     this.individualTicketPopupOpen = true;
-    this.individualTicketEmpty = false;
-    this.individualTicketData = {
-      day: 'جاري التحميل...',
-      date: '---',
-      time: '---',
-      specialist: 'فريق Revive',
-      type: 'جلسة فردية',
-      duration: '---',
-      price: '---',
-      availability: 'جاري التحميل...',
-      category: 'available',
-      categoryLabel: 'متاح',
-      seatsReserved: 0,
-      seatsTotal: 0,
-      available: false,
-    };
-
-    this.authService.getUpcomingUnpaidIndividualSessions().subscribe({
-      next: (response) => {
-        const sessions = response?.body?.sessions ?? [];
-        if (sessions.length > 0) {
-          // Sort by session_number DESC so Session 2 is prioritized over Session 1 if both exist
-          const session = [...sessions].sort((a, b) => (b.session_number ?? 0) - (a.session_number ?? 0))[0];
-          const day = this.formatSessionDay(session.date);
-          const date = this.formatSessionDate(session.date);
-          const time = this.formatSessionTime(session.time);
-          const isFinished = session.status === 'finished' || session.status === 'completed' || session.status === 'cancelled';
-          const currentParticipants = session.current_participants ?? 0;
-          const maxParticipants = session.max_participants ?? session.session_metadata?.max_participants ?? 1;
-          const isFull = !!session.is_full || (maxParticipants > 0 && currentParticipants >= maxParticipants);
-          const isAvailable = !isFinished && !isFull && !session.is_booked;
-
-          let category: 'available' | 'upcoming' | 'paid' = 'paid';
-          let categoryLabel = 'مكتمل';
-
-          if (session.status === 'upcoming' || session.status === 'scheduled') {
-            category = 'upcoming';
-            categoryLabel = 'قادم';
-          } else if (isAvailable) {
-            category = 'available';
-            categoryLabel = 'متاح';
-          }
-
-          this.individualTicketData = {
-            sessionNumber: session.session_number,
-            title: session.title || session.session_metadata?.title || 'جلسة فردية',
-            isFull,
-            currentParticipants: currentParticipants,
-            maxParticipants: maxParticipants,
-            day,
-            date,
-            time,
-            specialist: session.instructor_name || 'فريق Revive',
-            type: 'جلسة فردية',
-            duration: `${session.duration_minutes ?? 0} دقيقة`,
-            price: session.formatted_price || `${session.price} ج.م`,
-            availability: isFinished ? 'انتهت' : isFull ? 'مكتمل' : 'متاح للحجز',
-            category,
-            categoryLabel,
-            seatsReserved: currentParticipants,
-            seatsTotal: maxParticipants,
-            available: isAvailable,
-          };
-          this.individualTicketEmpty = false;
-        } else {
-          this.individualTicketData = {
-            day: '---',
-            date: '---',
-            time: '---',
-            specialist: 'فريق Revive',
-            type: 'جلسة فردية',
-            duration: '---',
-            price: '---',
-            availability: 'لا توجد جلسات فردية متاحة حالياً',
-            category: 'available',
-            categoryLabel: 'متاح',
-            seatsReserved: 0,
-            seatsTotal: 0,
-            available: false,
-          };
-          this.individualTicketEmpty = true;
-        }
-        this.cdr.markForCheck();
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.individualTicketData = {
-          day: '---',
-          date: '---',
-          time: '---',
-          specialist: 'فريق Revive',
-          type: 'جلسة فردية',
-          duration: '---',
-          price: '---',
-          availability: 'تعذر التحميل',
-          category: 'available',
-          categoryLabel: 'متاح',
-          seatsReserved: 0,
-          seatsTotal: 0,
-          available: false,
-        };
-        this.cdr.markForCheck();
-        this.cdr.detectChanges();
-      },
-    });
+    this.selectedSessionKey = this.selectedSessionKey && this.selectedSession?.sessionType === 'individual'
+      ? this.selectedSessionKey
+      : this.individualSessions.find((session) => session.available && !session.isFull)?.selectionKey ?? null;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   closeIndividualTicketPopup(): void {
     this.individualTicketPopupOpen = false;
-    this.individualTicketData = null;
-    this.individualTicketEmpty = false;
   }
 
   logout(): void {
@@ -688,20 +588,27 @@ export class UserProfile implements OnInit {
     }
   }
 
-  private mergeSessions(upcomingResponse: SessionApiResponse, unpaidResponse: SessionApiResponse): SessionApiResponse {
-    const mergedSessions = [
-      ...(upcomingResponse?.body?.sessions ?? []),
-      ...(unpaidResponse?.body?.sessions ?? []),
-    ];
+  private mergeSessions(...responses: SessionApiResponse[]): SessionApiResponse {
+    const sessionsById = new Map<number, SessionApiResponse['body']['sessions'][number]>();
+
+    responses.forEach((response) => {
+      (response?.body?.sessions ?? []).forEach((session) => {
+        sessionsById.set(session.id, session);
+      });
+    });
+
+    const mergedSessions = Array.from(sessionsById.values());
+    const firstResponse = responses[0];
+    const lastResponse = responses[responses.length - 1];
 
     return {
-      custom_code: upcomingResponse?.custom_code ?? unpaidResponse?.custom_code ?? 2000,
-      status: upcomingResponse?.status ?? unpaidResponse?.status ?? true,
-      message: upcomingResponse?.message ?? unpaidResponse?.message ?? 'Data retrieved successfully.',
+      custom_code: firstResponse?.custom_code ?? lastResponse?.custom_code ?? 2000,
+      status: firstResponse?.status ?? lastResponse?.status ?? true,
+      message: firstResponse?.message ?? lastResponse?.message ?? 'Data retrieved successfully.',
       body: {
         sessions: mergedSessions,
       },
-      info: upcomingResponse?.info ?? unpaidResponse?.info ?? 'from response action',
+      info: firstResponse?.info ?? lastResponse?.info ?? 'from response action',
     };
   }
 
