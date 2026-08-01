@@ -45,6 +45,8 @@ interface RecoverySession {
 
 interface SessionTicket {
   id: number;
+  sessionNumber?: number;
+  title?: string;
   day: string;
   date: string;
   time: string;
@@ -773,6 +775,8 @@ export class UserProfile implements OnInit {
 
       return {
         id: session.id,
+        sessionNumber: session.session_number,
+        title: session.title || session.session_metadata?.title || 'جلسة',
         day: this.formatSessionDay(session.date),
         date: this.formatSessionDate(session.date),
         time: this.formatSessionTime(session.time),
