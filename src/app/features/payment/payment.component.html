@@ -1,0 +1,261 @@
+<section class="payment-page" dir="rtl">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <a class="brand" routerLink="/">
+      <div class="brand-icon">
+        <img src="/assets/images/logo.png" alt="Revive Logo" />
+      </div>
+    </a>
+    <button type="button" class="back-btn" (click)="goBack()">
+      <i class="fa-solid fa-arrow-right"></i>
+      العودة
+    </button>
+  </header>
+
+  <main class="payment-main">
+
+    <!-- ✅ Success Screen -->
+    @if (submitted) {
+      <div class="success-screen">
+        <div class="success-glow"></div>
+        <div class="success-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h1>تمّت عملية الدفع بنجاح!</h1>
+        <p>سيتواصل معك فريق Revive لتأكيد الحجز وإرسال تفاصيل الجلسة.</p>
+        @if (sessionNumber) {
+          <div class="success-badge">
+            <i class="fa-solid fa-calendar-check"></i>
+            جلسة #{{ sessionNumber }}{{ sessionTitle ? ' — ' + sessionTitle : '' }}
+          </div>
+        }
+        <button type="button" class="primary-btn" (click)="goBack()">
+          <i class="fa-solid fa-house"></i>
+          العودة للرئيسية
+        </button>
+      </div>
+
+    } @else {
+      <div class="checkout-grid">
+
+        <!-- Left: Session Summary -->
+        <aside class="order-summary">
+          <div class="order-header">
+            <span class="order-label">ملخص الطلب</span>
+          </div>
+
+          <div class="order-session-type" [class.individual]="sessionType === 'individual'">
+            <i [class]="sessionType === 'individual' ? 'fa-solid fa-user-doctor' : 'fa-solid fa-users'"></i>
+            {{ sessionType === 'individual' ? 'جلسة فردية' : 'جلسة جماعية' }}
+          </div>
+
+          @if (sessionNumber) {
+            <div class="order-session-num">جلسة #{{ sessionNumber }}{{ sessionTitle ? ' — ' + sessionTitle : '' }}</div>
+          }
+
+          <div class="order-rows">
+            @if (sessionDate) {
+              <div class="order-row">
+                <span class="order-row-label"><i class="fa-regular fa-calendar"></i> التاريخ</span>
+                <span class="order-row-val">{{ sessionDate }}{{ sessionTime ? ' - ' + sessionTime : '' }}</span>
+              </div>
+            }
+            @if (sessionSpecialist) {
+              <div class="order-row">
+                <span class="order-row-label"><i class="fa-solid fa-user-tie"></i> المتخصص</span>
+                <span class="order-row-val">{{ sessionSpecialist }}</span>
+              </div>
+            }
+          </div>
+
+          @if (sessionPrice) {
+            <div class="order-total">
+              <span>المبلغ الإجمالي</span>
+              <strong>{{ sessionPrice }}</strong>
+            </div>
+          }
+
+          <div class="security-badges">
+            <span><i class="fa-solid fa-lock"></i> مشفّر بـ SSL</span>
+            <span><i class="fa-solid fa-shield-halved"></i> آمن 100%</span>
+          </div>
+        </aside>
+
+        <!-- Right: Payment Form -->
+        <div class="payment-form-wrap">
+
+          <!-- ──── Live Card Preview ──── -->
+          <div class="card-preview-wrap" [class.flipped]="cardFlipped">
+            <!-- Front -->
+            <div class="card-face card-front" [class.visa]="cardBrand === 'visa'" [class.mc]="cardBrand === 'mastercard'">
+              <div class="card-front-top">
+                <div class="chip">
+                  <div class="chip-line"></div>
+                  <div class="chip-line"></div>
+                  <div class="chip-line"></div>
+                </div>
+                @if (cardBrand === 'visa') {
+                  <span class="card-logo visa-logo">VISA</span>
+                } @else if (cardBrand === 'mastercard') {
+                  <div class="card-logo mc-logo">
+                    <span class="mc-circle mc-left"></span>
+                    <span class="mc-circle mc-right"></span>
+                  </div>
+                } @else {
+                  <div class="card-logo card-logo-generic">
+                    <i class="fa-solid fa-credit-card"></i>
+                  </div>
+                }
+              </div>
+              <div class="card-number-display">{{ formattedCardNumber }}</div>
+              <div class="card-bottom-info">
+                <div class="card-holder-info">
+                  <small>حامل البطاقة</small>
+                  <span>{{ displayCardHolder }}</span>
+                </div>
+                <div class="card-expiry-info">
+                  <small>الصلاحية</small>
+                  <span>{{ displayExpiry }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Back -->
+            <div class="card-face card-back">
+              <div class="card-strip"></div>
+              <div class="card-cvv-wrap">
+                <small>CVV</small>
+                <div class="card-cvv-box">{{ displayCvv }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ──── Card Form ──── -->
+          <form class="card-form" (ngSubmit)="submitPayment()" novalidate>
+            <h2 class="form-title">
+              <i class="fa-solid fa-credit-card"></i>
+              بيانات البطاقة
+            </h2>
+
+            <!-- Card Number -->
+            <div class="field-group">
+              <label for="cardNumber">رقم البطاقة</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-credit-card field-icon"></i>
+                <input
+                  id="cardNumber"
+                  type="text"
+                  inputmode="numeric"
+                  class="card-input"
+                  placeholder="0000 0000 0000 0000"
+                  [value]="cardNumber"
+                  (input)="formatCardNumber($event)"
+                  maxlength="19"
+                  dir="ltr"
+                  autocomplete="cc-number"
+                />
+                @if (cardBrand === 'visa') {
+                  <span class="brand-pill visa">VISA</span>
+                } @else if (cardBrand === 'mastercard') {
+                  <span class="brand-pill mc">MC</span>
+                }
+              </div>
+            </div>
+
+            <!-- Cardholder Name -->
+            <div class="field-group">
+              <label for="cardHolder">اسم حامل البطاقة</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-user field-icon"></i>
+                <input
+                  id="cardHolder"
+                  type="text"
+                  class="card-input"
+                  placeholder="الاسم كما يظهر على البطاقة"
+                  [(ngModel)]="cardHolder"
+                  name="cardHolder"
+                  autocomplete="cc-name"
+                  (input)="cardHolder = $any($event.target).value.toUpperCase()"
+                />
+              </div>
+            </div>
+
+            <!-- Expiry + CVV row -->
+            <div class="field-row">
+              <div class="field-group">
+                <label for="expiryDate">تاريخ الانتهاء</label>
+                <div class="input-wrap">
+                  <i class="fa-regular fa-calendar field-icon"></i>
+                  <input
+                    id="expiryDate"
+                    type="text"
+                    inputmode="numeric"
+                    class="card-input"
+                    placeholder="MM / YY"
+                    [value]="expiryDate"
+                    (input)="formatExpiry($event)"
+                    maxlength="5"
+                    dir="ltr"
+                    autocomplete="cc-exp"
+                  />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="cvv">CVV</label>
+                <div class="input-wrap">
+                  <i class="fa-solid fa-lock field-icon"></i>
+                  <input
+                    id="cvv"
+                    type="password"
+                    inputmode="numeric"
+                    class="card-input"
+                    placeholder="•••"
+                    [value]="cvv"
+                    (input)="formatCvv($event)"
+                    (focus)="cardFlipped = true"
+                    (blur)="cardFlipped = false"
+                    maxlength="4"
+                    dir="ltr"
+                    autocomplete="cc-csc"
+                  />
+                </div>
+              </div>
+            </div>
+
+            @if (formError) {
+              <div class="error-banner">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ formError }}
+              </div>
+            }
+
+            <button
+              type="submit"
+              class="pay-btn"
+              [disabled]="submitting || !canSubmit()"
+              [class.loading]="submitting"
+            >
+              @if (submitting) {
+                <span class="spinner"></span>
+                جاري المعالجة...
+              } @else {
+                <i class="fa-solid fa-lock"></i>
+                ادفع الآن
+                @if (sessionPrice) { — {{ sessionPrice }} }
+              }
+            </button>
+
+            <p class="secure-note">
+              <i class="fa-solid fa-shield-halved"></i>
+              بياناتك مشفّرة بالكامل ولا تُحفظ على خوادمنا
+            </p>
+          </form>
+
+        </div>
+      </div>
+    }
+
+  </main>
+</section>

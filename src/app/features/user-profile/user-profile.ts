@@ -149,7 +149,8 @@ export class UserProfile implements OnInit {
   }
 
   get selectedSession(): RecoverySession | undefined {
-    return this.allSessions.find((session) => session.selectionKey === this.selectedSessionKey);
+    return this.sessions.find((session) => session.selectionKey === this.selectedSessionKey)
+      ?? this.individualSessions.find((session) => session.selectionKey === this.selectedSessionKey);
   }
 
   get paidTickets(): SessionTicket[] {
@@ -204,13 +205,11 @@ export class UserProfile implements OnInit {
         const mappedUnpaid = this.mapSessions(this.mergeSessions(unpaid, unpaidIndividual));
         this.allSessions = mappedUnpaid;
 
-        // Filter group sessions ONLY for main sessions display
         this.groupSessions = mappedUnpaid.filter(s => s.sessionType === 'group');
         this.sessions = this.groupSessions;
         this.individualSessions = mappedUnpaid.filter(s => s.sessionType === 'individual');
         this.hasNoSessions = this.sessions.length === 0;
 
-        // Check availability for individual sessions button
         const availableIndividual = this.individualSessions.filter(s => !s.isFull);
         this.hasAvailableIndividualSession = availableIndividual.length > 0;
 
@@ -244,7 +243,6 @@ export class UserProfile implements OnInit {
   }
 
   selectSession(session: RecoverySession): void {
-    console.log('Selecting session', session.id, 'available', session.available, 'isFull', session.isFull);
     if (session.isFull || !session.available) {
       return;
     }
@@ -342,10 +340,7 @@ export class UserProfile implements OnInit {
     if (!this.selectedSession || this.selectedSession.isFull || !this.selectedSession.available) {
       return;
     }
-
-    console.log('openBookingModal called, selectedSession', this.selectedSession);
-    this.bookingModalOpen = true;
-    this.bookingConfirmed = false;
+    this.navigateToPayment(this.selectedSession);
   }
 
   closeBookingModal(): void {
@@ -356,15 +351,27 @@ export class UserProfile implements OnInit {
     if (!this.senderName.trim() || !this.whatsappNumber.trim()) {
       return;
     }
-
     this.bookingConfirmed = true;
+  }
+
+  navigateToPayment(session: RecoverySession): void {
+    this.router.navigate(['/payment'], {
+      queryParams: {
+        type: session.sessionType,
+        sessionNumber: session.sessionNumber ?? '',
+        title: session.title ?? '',
+        date: `${session.day}، ${session.date}`,
+        time: session.time,
+        specialist: session.specialist,
+        price: session.price,
+        name: this.profile.name,
+        phone: this.profile.phone,
+      },
+    });
   }
 
   openIndividualTicketPopup(): void {
     this.individualTicketPopupOpen = true;
-    this.selectedSessionKey = this.selectedSessionKey && this.selectedSession?.sessionType === 'individual'
-      ? this.selectedSessionKey
-      : this.individualSessions.find((session) => session.available && !session.isFull)?.selectionKey ?? null;
     this.cdr.markForCheck();
     this.cdr.detectChanges();
   }
@@ -432,18 +439,12 @@ export class UserProfile implements OnInit {
 
   private mapDrugTypeLabel(value: string): string {
     switch (value) {
-      case 'depressants':
-        return 'المثبطات';
-      case 'sedatives':
-        return 'المهدئات';
-      case 'stimulants':
-        return 'المنشطات';
-      case 'hallucinogens':
-        return 'المهلوسات';
-      case 'other':
-        return 'أخرى';
-      default:
-        return value;
+      case 'depressants': return 'المثبطات';
+      case 'sedatives': return 'المهدئات';
+      case 'stimulants': return 'المنشطات';
+      case 'hallucinogens': return 'المهلوسات';
+      case 'other': return 'أخرى';
+      default: return value;
     }
   }
 
@@ -496,33 +497,22 @@ export class UserProfile implements OnInit {
 
   private mapDurationIdToLabel(id: number | null | undefined): string {
     switch (id) {
-      case 1:
-        return 'أقل من 6 شهور';
-      case 2:
-        return 'من 6 إلى 12 شهر';
-      case 3:
-        return 'من سنة إلى 3 سنوات';
-      case 4:
-        return 'أكثر من 3 سنوات';
-      default:
-        return '';
+      case 1: return 'أقل من 6 شهور';
+      case 2: return 'من 6 إلى 12 شهر';
+      case 3: return 'من سنة إلى 3 سنوات';
+      case 4: return 'أكثر من 3 سنوات';
+      default: return '';
     }
   }
 
   private mapEducationIdToLabel(id: number | null | undefined): string {
     switch (id) {
-      case 5:
-        return 'بدون تعليم';
-      case 6:
-        return 'ابتدائي';
-      case 7:
-        return 'ثانوي / متوسط';
-      case 8:
-        return 'جامعي';
-      case 9:
-        return 'دراسات عليا';
-      default:
-        return '';
+      case 5: return 'بدون تعليم';
+      case 6: return 'ابتدائي';
+      case 7: return 'ثانوي / متوسط';
+      case 8: return 'جامعي';
+      case 9: return 'دراسات عليا';
+      default: return '';
     }
   }
 
@@ -573,42 +563,27 @@ export class UserProfile implements OnInit {
 
   private mapDrugDetails(value: string): string {
     switch (value) {
-      case 'depressants':
-        return 'حشيش، بانجو، هيدرو';
-      case 'sedatives':
-        return 'أفيون، ترامادول، هيروين';
-      case 'stimulants':
-        return 'شابو، كوكايين، إكستاسي';
-      case 'hallucinogens':
-        return 'LSD, Ice';
-      case 'other':
-        return 'نوع آخر';
-      default:
-        return '';
+      case 'depressants': return 'حشيش، بانجو، هيدرو';
+      case 'sedatives': return 'أفيون، ترامادول، هيروين';
+      case 'stimulants': return 'شابو، كوكايين، إكستاسي';
+      case 'hallucinogens': return 'LSD, Ice';
+      case 'other': return 'نوع آخر';
+      default: return '';
     }
   }
 
-  private mergeSessions(...responses: SessionApiResponse[]): SessionApiResponse {
-    const sessionsById = new Map<number, SessionApiResponse['body']['sessions'][number]>();
-
-    responses.forEach((response) => {
-      (response?.body?.sessions ?? []).forEach((session) => {
-        sessionsById.set(session.id, session);
-      });
-    });
-
-    const mergedSessions = Array.from(sessionsById.values());
-    const firstResponse = responses[0];
-    const lastResponse = responses[responses.length - 1];
+  private mergeSessions(upcomingResponse: SessionApiResponse, unpaidResponse: SessionApiResponse): SessionApiResponse {
+    const mergedSessions = [
+      ...(upcomingResponse?.body?.sessions ?? []),
+      ...(unpaidResponse?.body?.sessions ?? []),
+    ];
 
     return {
-      custom_code: firstResponse?.custom_code ?? lastResponse?.custom_code ?? 2000,
-      status: firstResponse?.status ?? lastResponse?.status ?? true,
-      message: firstResponse?.message ?? lastResponse?.message ?? 'Data retrieved successfully.',
-      body: {
-        sessions: mergedSessions,
-      },
-      info: firstResponse?.info ?? lastResponse?.info ?? 'from response action',
+      custom_code: upcomingResponse?.custom_code ?? unpaidResponse?.custom_code ?? 2000,
+      status: upcomingResponse?.status ?? unpaidResponse?.status ?? true,
+      message: upcomingResponse?.message ?? unpaidResponse?.message ?? 'Data retrieved successfully.',
+      body: { sessions: mergedSessions },
+      info: upcomingResponse?.info ?? unpaidResponse?.info ?? 'from response action',
     };
   }
 
@@ -683,7 +658,7 @@ export class UserProfile implements OnInit {
       return {
         id: session.id,
         sessionNumber: session.session_number,
-        title: session.title || session.session_metadata?.title || 'جلسة',
+        title: session.title || session.session_metadata?.title,
         day: this.formatSessionDay(session.date),
         date: this.formatSessionDate(session.date),
         time: this.formatSessionTime(session.time),
@@ -698,36 +673,20 @@ export class UserProfile implements OnInit {
 
   private formatSessionDay(value: string): string {
     const parsed = this.parseDate(value);
-    if (!parsed) {
-      return '';
-    }
-
+    if (!parsed) { return ''; }
     return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(parsed);
   }
 
   private formatSessionDate(value: string): string {
     const parsed = this.parseDate(value);
-    if (!parsed) {
-      return value;
-    }
-
-    return new Intl.DateTimeFormat('ar-EG', {
-      day: 'numeric',
-      month: 'short',
-    }).format(parsed);
+    if (!parsed) { return value; }
+    return new Intl.DateTimeFormat('ar-EG', { day: 'numeric', month: 'short' }).format(parsed);
   }
 
   private formatSessionTime(value: string): string {
-    if (!value) {
-      return '';
-    }
-
+    if (!value) { return ''; }
     const [hours, minutes] = value.split(':').map((part) => Number(part));
-
-    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
-      return value;
-    }
-
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) { return value; }
     const period = hours >= 12 ? 'م' : 'ص';
     const normalizedHours = hours % 12 || 12;
     return `${normalizedHours}:${String(minutes).padStart(2, '0')} ${period}`;
@@ -735,10 +694,7 @@ export class UserProfile implements OnInit {
 
   private parseDate(value: string): Date | null {
     const parts = value.split('/');
-    if (parts.length !== 3) {
-      return null;
-    }
-
+    if (parts.length !== 3) { return null; }
     const [day, month, year] = parts;
     const parsed = new Date(Number(year), Number(month) - 1, Number(day));
     return Number.isNaN(parsed.getTime()) ? null : parsed;
