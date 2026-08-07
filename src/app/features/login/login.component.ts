@@ -39,7 +39,7 @@ export class LoginComponent {
   ];
   
   readonly loginForm = this.fb.nonNullable.group({
-    mobile_number: ['', [Validators.required, Validators.pattern(/^\d{6,15}$/)]],
+    mobile_number: ['', [Validators.required]],
     password: ['', Validators.required],
   });
 
@@ -53,8 +53,11 @@ export class LoginComponent {
   }
 
   private normalizeMobileNumber(value: string): string {
-    const digits = value.replace(/\D/g, '');
-    return digits ? `${this.selectedCountryDialCode}${digits}` : '';
+    const trimmed = (value || '').trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('+')) return trimmed;
+    const digits = trimmed.replace(/\D/g, '');
+    return digits ? `${this.selectedCountryDialCode}${digits}` : trimmed;
   }
 
   getFieldError(controlName: 'mobile_number' | 'password'): string | null {
@@ -66,10 +69,6 @@ export class LoginComponent {
 
     if (control.hasError('required')) {
       return controlName === 'mobile_number' ? 'رقم الواتساب مطلوب' : 'كلمة المرور مطلوبة';
-    }
-
-    if (controlName === 'mobile_number' && control.hasError('pattern')) {
-      return 'أدخل رقم واتساب صحيح ';
     }
 
     return null;

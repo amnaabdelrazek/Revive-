@@ -76,7 +76,7 @@ export class RegisterComponent {
 
   registerForm = this.fb.group({
     display_name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-    mobile_number: ['', [Validators.required, Validators.pattern(/^\d{6,15}$/)]],
+    mobile_number: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
 
@@ -117,8 +117,11 @@ export class RegisterComponent {
   }
 
   private normalizeMobileNumber(value: string | null | undefined): string {
-    const digits = (value || '').replace(/\D/g, '');
-    return digits ? `${this.selectedCountryDialCode}${digits}` : '';
+    const trimmed = (value || '').trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('+')) return trimmed;
+    const digits = trimmed.replace(/\D/g, '');
+    return digits ? `${this.selectedCountryDialCode}${digits}` : trimmed;
   }
 
   getFieldError(controlName: string): string | null {
@@ -148,10 +151,6 @@ export class RegisterComponent {
 
     if (controlName === 'display_name' && control.hasError('maxlength')) {
       return 'يجب ألا يزيد الاسم عن 20 حرفًا';
-    }
-
-    if (controlName === 'mobile_number' && control.hasError('pattern')) {
-      return 'أدخل رقم واتساب  صحيح يبدأ بـ 10 أو 11 أو 12 أو 15';
     }
 
     if (controlName === 'password' && control.hasError('minlength')) {
