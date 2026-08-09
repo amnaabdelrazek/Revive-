@@ -28,23 +28,74 @@ export class RegisterComponent {
     { flag: '🇪🇬', name: 'مصر', dialCode: '+20' },
     { flag: '🇸🇦', name: 'السعودية', dialCode: '+966' },
     { flag: '🇦🇪', name: 'الإمارات', dialCode: '+971' },
-    { flag: '🇯🇴', name: 'الأردن', dialCode: '+962' },
-    { flag: '🇶🇦', name: 'قطر', dialCode: '+974' },
     { flag: '🇰🇼', name: 'الكويت', dialCode: '+965' },
+    { flag: '🇶🇦', name: 'قطر', dialCode: '+974' },
+    { flag: '🇧🇭', name: 'البحرين', dialCode: '+973' },
+    { flag: '🇴🇲', name: 'عُمان', dialCode: '+968' },
+    { flag: '🇯🇴', name: 'الأردن', dialCode: '+962' },
+    { flag: '🇱🇧', name: 'لبنان', dialCode: '+961' },
+    { flag: '🇮🇶', name: 'العراق', dialCode: '+964' },
+    { flag: '🇵🇸', name: 'فلسطين', dialCode: '+970' },
+    { flag: '🇸🇾', name: 'سوريا', dialCode: '+963' },
+    { flag: '🇾🇪', name: 'اليمن', dialCode: '+967' },
+    { flag: '🇱🇾', name: 'ليبيا', dialCode: '+218' },
+    { flag: '🇸🇩', name: 'السودان', dialCode: '+249' },
+    { flag: '🇹🇳', name: 'تونس', dialCode: '+216' },
+    { flag: '🇩🇿', name: 'الجزائر', dialCode: '+213' },
+    { flag: '🇲🇦', name: 'المغرب', dialCode: '+212' },
+    { flag: '🇲🇷', name: 'موريتانيا', dialCode: '+222' },
+    { flag: '🇸🇴', name: 'الصومال', dialCode: '+252' },
+    { flag: '🇩🇯', name: 'جيبوتي', dialCode: '+253' },
+    { flag: '🇰🇲', name: 'جزر القمر', dialCode: '+269' },
+    { flag: '🇺🇸', name: 'أمريكا / كندا', dialCode: '+1' },
+    { flag: '🇬🇧', name: 'المملكة المتحدة', dialCode: '+44' },
+    { flag: '🇩🇪', name: 'ألمانيا', dialCode: '+49' },
+    { flag: '🇫🇷', name: 'فرنسا', dialCode: '+33' },
+    { flag: '🇮🇹', name: 'إيطاليا', dialCode: '+39' },
+    { flag: '🇪🇸', name: 'إسبانيا', dialCode: '+34' },
+    { flag: '🇹🇷', name: 'تركيا', dialCode: '+90' },
+    { flag: '🇷🇺', name: 'روسيا', dialCode: '+7' },
+    { flag: '🇨🇳', name: 'الصين', dialCode: '+86' },
+    { flag: '🇮🇳', name: 'الهند', dialCode: '+91' },
+    { flag: '🇵🇰', name: 'باكستان', dialCode: '+92' },
+    { flag: '🇧🇩', name: 'بنغلاديش', dialCode: '+880' },
+    { flag: '🇮🇩', name: 'إندونيسيا', dialCode: '+62' },
+    { flag: '🇲🇾', name: 'ماليزيا', dialCode: '+60' },
+    { flag: '🇵🇭', name: 'الفلبين', dialCode: '+63' },
+    { flag: '🇳🇬', name: 'نيجيريا', dialCode: '+234' },
+    { flag: '🇿🇦', name: 'جنوب إفريقيا', dialCode: '+27' },
+    { flag: '🇧🇷', name: 'البرازيل', dialCode: '+55' },
+    { flag: '🇦🇷', name: 'الأرجنتين', dialCode: '+54' },
+    { flag: '🇲🇽', name: 'المكسيك', dialCode: '+52' },
+    { flag: '🇦🇺', name: 'أستراليا', dialCode: '+61' },
+    { flag: '🇳🇿', name: 'نيوزيلندا', dialCode: '+64' },
+    { flag: '🇸🇬', name: 'سنغافورة', dialCode: '+65' },
+    { flag: '🇸🇪', name: 'السويد', dialCode: '+46' },
+    { flag: '🇳🇴', name: 'النرويج', dialCode: '+47' },
+    { flag: '🇩🇰', name: 'الدنمارك', dialCode: '+45' },
+    { flag: '🇫🇮', name: 'فنلندا', dialCode: '+358' },
+    { flag: '🇳🇱', name: 'هولندا', dialCode: '+31' },
+    { flag: '🇧🇪', name: 'بلجيكا', dialCode: '+32' },
+    { flag: '🇨🇭', name: 'سويسرا', dialCode: '+41' },
+    { flag: '🇦🇹', name: 'النمسا', dialCode: '+43' },
+    { flag: '🇬🇷', name: 'اليونان', dialCode: '+30' },
+    { flag: '🇵🇹', name: 'البرتغال', dialCode: '+351' },
+    { flag: '🇮🇪', name: 'أيرلندا', dialCode: '+353' },
+    { flag: '🇵🇱', name: 'بولندا', dialCode: '+48' },
+    { flag: '🇷🇴', name: 'رومانيا', dialCode: '+40' },
+    { flag: '🇺🇦', name: 'أوكرانيا', dialCode: '+380' },
+    { flag: '🇯🇵', name: 'اليابان', dialCode: '+81' },
+    { flag: '🇰🇷', name: 'كوريا الجنوبية', dialCode: '+82' },
+    { flag: '🇹🇭', name: 'تايلاند', dialCode: '+66' },
+    { flag: '🇻🇳', name: 'فيتنام', dialCode: '+84' },
+    { flag: '🇮🇷', name: 'إيران', dialCode: '+98' },
   ];
 
-  substances = [
-    { title: 'حشيش', desc: 'المثبطات', id: 1 },
-    { title: 'بانجو', desc: 'المثبطات', id: 2 },
-    { title: 'هيدرو', desc: 'المثبطات', id: 3 },
-    { title: 'أفيون', desc: 'المهدئات', id: 4 },
-    { title: 'ترامادول', desc: 'المهدئات', id: 5 },
-    { title: 'هيروين', desc: 'المهدئات', id: 6 },
-    { title: 'شابو', desc: 'المنشطات', id: 7 },
-    { title: 'كوكايين', desc: 'المنشطات', id: 8 },
-    { title: 'إكستاسي', desc: 'المنشطات', id: 9 },
-    { title: 'LSD', desc: 'المهلوسات', id: 10 },
-    { title: 'Ice / Crystal Meth', desc: 'المهلوسات', id: 11 },
+  substanceCategories = [
+    { title: 'المثبطات', description: 'حشيش، بانجو، هيدرو', ids: [1, 2, 3] },
+    { title: 'المهدئات', description: 'أفيون، ترامادول، هيروين', ids: [4, 5, 6] },
+    { title: 'المنشطات', description: 'شابو، كوكايين، إكستاسي', ids: [7, 8, 9] },
+    { title: 'المهلوسات', description: 'LSD, Ice / Crystal Meth', ids: [10, 11] },
   ];
 
   durations = [
@@ -101,8 +152,13 @@ export class RegisterComponent {
     }
   }
 
-  selectSubstance(id: number): void {
-    this.registerForm.get('substance_ids')?.setValue([id]);
+  isCategorySelected(cat: { ids: number[] }): boolean {
+    const currentIds: number[] = this.registerForm.value.substance_ids || [];
+    return cat.ids.length > 0 && cat.ids.every(id => currentIds.includes(id));
+  }
+
+  selectSubstanceCategory(cat: { ids: number[] }): void {
+    this.registerForm.get('substance_ids')?.setValue(cat.ids);
     this.registerForm.get('substance_ids')?.markAsTouched();
   }
 
@@ -127,6 +183,17 @@ export class RegisterComponent {
   getFieldError(controlName: string): string | null {
     const control = this.registerForm.get(controlName);
 
+    if (controlName === 'confirmPassword') {
+      const confirmControl = this.registerForm.get('confirmPassword');
+      if (!confirmControl || !confirmControl.touched) return null;
+      if (confirmControl.hasError('required')) return 'تأكيد كلمة المرور مطلوب';
+      const passwordVal = this.registerForm.get('password')?.value;
+      if (passwordVal !== confirmControl.value) {
+        return 'كلمتا المرور غير متطابقتين';
+      }
+      return null;
+    }
+
     if (!control || !control.touched || !control.invalid) return null;
 
     if (control.hasError('required')) {
@@ -134,7 +201,6 @@ export class RegisterComponent {
         display_name: 'الاسم مطلوب',
         mobile_number: 'رقم الواتساب مطلوب',
         password: 'كلمة المرور مطلوبة',
-        confirmPassword: 'تأكيد كلمة المرور مطلوب',
         substance_ids: 'اختر نوع المخدر',
         addiction_duration_id: 'اختر فترة تعاطي المخدر',
         education_level_id: 'اختر المستوى التعليمي',
@@ -155,10 +221,6 @@ export class RegisterComponent {
 
     if (controlName === 'password' && control.hasError('minlength')) {
       return 'كلمة المرور يجب ألا تقل عن 8 أحرف';
-    }
-
-    if (controlName === 'confirmPassword' && control.hasError('mismatch')) {
-      return 'كلمتا المرور غير متطابقتين';
     }
 
     if (controlName === 'days_clean' && control.hasError('min')) {

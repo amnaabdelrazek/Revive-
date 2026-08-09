@@ -107,6 +107,8 @@
               class="form-control revive-input"
               placeholder="تأكيد كلمة المرور"
               formControlName="confirmPassword"
+              (blur)="registerForm.get('confirmPassword')?.markAsTouched()"
+              (input)="registerForm.get('confirmPassword')?.markAsTouched()"
             />
 
             @if (getFieldError('confirmPassword')) {
@@ -116,23 +118,23 @@
         </div>
       </div>
 
-      <!-- Substance -->
+      <!-- Substance Categories -->
       <div class="section-block">
         <div class="section-title">
           <h3>نوع المخدر</h3>
-          <small>اختر واحدًا فقط</small>
+          <small>اختر الفئة التابع لها نوعك</small>
         </div>
 
         <div class="choice-grid">
           <button
             type="button"
             class="choice-card"
-            *ngFor="let item of substances"
-            [class.active]="registerForm.value.substance_ids?.includes(item.id)"
-            (click)="selectSubstance(item.id)"
+            *ngFor="let item of substanceCategories"
+            [class.active]="isCategorySelected(item)"
+            (click)="selectSubstanceCategory(item)"
           >
             <strong>{{ item.title }}</strong>
-            <span>{{ item.desc }}</span>
+            <span>{{ item.description }}</span>
           </button>
         </div>
 
