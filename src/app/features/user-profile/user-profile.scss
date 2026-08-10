@@ -1235,3 +1235,37 @@ border-color: #bcccf9 !important;
   }
 }
 
+/* ─── Dedicated Full Width Tab Page Layouts ─── */
+.full-width-content {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.profile-panels-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: start;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tab-tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.booking-tab-wrapper {
+  width: 100%;
+}
+
+.full-width-panel {
+  width: 100%;
+}
+
+

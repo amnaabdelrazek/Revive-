@@ -49,8 +49,18 @@
       </div>
     </section>
 
-    <!-- Sub-Navbar / Main Session Tabs directly under Header -->
+    <!-- Sub-Navbar / Main Navigation Tabs -->
     <nav class="profile-tabs-bar">
+      <button
+        type="button"
+        class="profile-tab-btn profile-tab"
+        [class.active]="activeMainTab === 'profile'"
+        (click)="switchMainTab('profile')"
+      >
+        <i class="fa-solid fa-user"></i>
+        <span>الملف الشخصي</span>
+      </button>
+
       <button
         type="button"
         class="profile-tab-btn"
@@ -95,119 +105,120 @@
       </button>
     </nav>
 
-    <!-- Main Content Grid -->
-    <div class="content-grid">
-      <!-- Profile Info Column -->
-      <div class="profile-column">
-        <section class="panel">
-          <div class="panel-title">
-            <div>
-              <i class="fa-solid fa-user"></i>
-              <span>
-                <h2>البيانات الشخصية</h2>
-                <p>بيانات التواصل الأساسية</p>
-              </span>
-            </div>
-          </div>
+    <!-- Full Width Content Section for Dedicated Tabs -->
+    <div class="full-width-content">
 
-          <div class="info-grid">
-            <article>
-              <i class="fa-solid fa-id-badge"></i>
-              <span>
-                <small>الاسم</small>
-                <strong>{{ profile.name }}</strong>
-              </span>
-            </article>
-
-            <article>
-              <i class="fa-brands fa-whatsapp"></i>
-              <span>
-                <small>رقم الواتساب</small>
-                <strong dir="ltr">{{ profile.phone }}</strong>
-              </span>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel recovery-panel">
-          <div class="panel-title">
-            <div>
-              <i class="fa-solid fa-heart-pulse"></i>
-              <span>
-                <h2>ملف رحلة التعافي</h2>
-                <p>المعلومات التي شاركتها معنا</p>
-              </span>
+      <!-- TAB 1: Profile Info (Full Page Width) -->
+      @if (activeMainTab === 'profile') {
+        <div class="profile-panels-wrapper">
+          <section class="panel">
+            <div class="panel-title">
+              <div>
+                <i class="fa-solid fa-user"></i>
+                <span>
+                  <h2>البيانات الشخصية</h2>
+                  <p>بيانات التواصل الأساسية الخاصّ بك</p>
+                </span>
+              </div>
             </div>
 
-            <span class="private">
-              <i class="fa-solid fa-shield-halved"></i>
-              سري
-            </span>
-          </div>
+            <div class="info-grid">
+              <article>
+                <i class="fa-solid fa-id-badge"></i>
+                <span>
+                  <small>الاسم بالكامل</small>
+                  <strong>{{ profile.name }}</strong>
+                </span>
+              </article>
 
-          <div class="recovery-grid">
-            <article>
-              <small>نوع المخدر</small>
-              <strong>{{ profile.drugType }}</strong>
-              <p>{{ profile.drugDetails }}</p>
-            </article>
+              <article>
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>
+                  <small>رقم الواتساب</small>
+                  <strong dir="ltr">{{ profile.phone }}</strong>
+                </span>
+              </article>
+            </div>
+          </section>
 
-            <article>
-              <small>فترة التعاطي</small>
-              <strong>{{ profile.usageDuration }}</strong>
-            </article>
+          <section class="panel recovery-panel">
+            <div class="panel-title">
+              <div>
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>
+                  <h2>ملف رحلة التعافي</h2>
+                  <p>المعلومات التي شاركتها معنا</p>
+                </span>
+              </div>
 
-            <article>
-              <small>سابقة العلاج</small>
-              <strong>{{ profile.previousTreatment }}</strong>
-            </article>
+              <span class="private">
+                <i class="fa-solid fa-shield-halved"></i>
+                سري ومحمي
+              </span>
+            </div>
 
-            <article>
-              <small>المستوى التعليمي</small>
-              <strong>{{ profile.education }}</strong>
-            </article>
+            <div class="recovery-grid">
+              <article>
+                <small>نوع المخدر</small>
+                <strong>{{ profile.drugType }}</strong>
+                <p>{{ profile.drugDetails }}</p>
+              </article>
 
-            <article class="reason">
-              <small>أسباب الإدمان</small>
-              <p>{{ profile.addictionReason }}</p>
-            </article>
-          </div>
-        </section>
-      </div>
+              <article>
+                <small>فترة التعاطي</small>
+                <strong>{{ profile.usageDuration }}</strong>
+              </article>
 
-      <!-- Right Column: Active Tab Content -->
-      <aside class="session-column">
+              <article>
+                <small>سابقة العلاج</small>
+                <strong>{{ profile.previousTreatment }}</strong>
+              </article>
 
-        <!-- Tab 1: Available Booking -->
-        @if (activeMainTab === 'available') {
+              <article>
+                <small>المستوى التعليمي</small>
+                <strong>{{ profile.education }}</strong>
+              </article>
+
+              <article class="reason">
+                <small>أسباب الإدمان</small>
+                <p>{{ profile.addictionReason }}</p>
+              </article>
+            </div>
+          </section>
+        </div>
+      }
+
+      <!-- TAB 2: Book Sessions (Full Page Width) -->
+      @if (activeMainTab === 'available') {
+        <div class="booking-tab-wrapper">
           <div class="section-heading">
             <span>خطوتك القادمة</span>
 
             @if (upcomingIndividualTickets.length > 0 || upcomingGroupTickets.length > 0) {
-              <div class="upcoming-sessions-block" style="margin: 16px 0; padding: 16px; background: rgba(79, 70, 229, 0.05); border-radius: 12px; border: 1px solid rgba(79, 70, 229, 0.15);">
-                <h3 style="font-size: 15px; font-weight: 700; color: #4f46e5; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+              <div class="upcoming-sessions-block" style="margin: 16px 0; padding: 18px; background: rgba(79, 70, 229, 0.06); border-radius: 12px; border: 1px solid rgba(79, 70, 229, 0.2);">
+                <h3 style="font-size: 16px; font-weight: 800; color: #4f46e5; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
                   <i class="fa-solid fa-calendar-check"></i> جلساتي القادمة المحجوزة
                 </h3>
 
                 @if (upcomingIndividualTickets.length > 0) {
                   <div class="upcoming-sub-group">
-                    <h4 style="font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: #cbd5e1; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                       <i class="fa-solid fa-user-doctor" style="color: #4f46e5;"></i> الجلسات الفردية القادمة
                     </h4>
-                    <div class="tickets-list">
+                    <div class="tickets-grid-preview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
                       @for (ticket of upcomingIndividualTickets; track ticket.id) {
-                        <div class="upcoming-ticket-card" style="background: #ffffff; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; border-right: 4px solid #4f46e5; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+                        <div class="upcoming-ticket-card" style="background: #071220; padding: 12px 16px; border-radius: 8px; border-right: 4px solid #4f46e5; border-top: 1px solid #142a49; border-bottom: 1px solid #142a49; border-left: 1px solid #142a49;">
                           <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                             @if (ticket.sessionNumber) {
-                              <span style="background: rgba(79, 70, 229, 0.1); color: #4f46e5; padding: 2px 7px; border-radius: 5px; font-size: 12px; font-weight: 800;">جلسة #{{ ticket.sessionNumber }}</span>
+                              <span style="background: rgba(79, 70, 229, 0.2); color: #818cf8; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 800;">جلسة #{{ ticket.sessionNumber }}</span>
                             }
                             @if (ticket.title) {
-                              <span style="color: #111827; font-size: 13px; font-weight: 800;">{{ ticket.title }}</span>
+                              <span style="color: #f1f5f9; font-size: 13px; font-weight: 800;">{{ ticket.title }}</span>
                             }
                           </div>
-                          <strong style="color: #111827; font-size: 14px;">{{ ticket.type }} - {{ ticket.specialist }}</strong>
-                          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-                            <i class="fa-regular fa-clock" style="margin-left: 4px;"></i> {{ ticket.day }}، {{ ticket.date }} - {{ ticket.time }}
+                          <strong style="color: #f8fafc; font-size: 13px;">{{ ticket.type }} - {{ ticket.specialist }}</strong>
+                          <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+                            <i class="fa-regular fa-clock" style="margin-left: 4px; color: #38bdf8;"></i> {{ ticket.day }}، {{ ticket.date }} - {{ ticket.time }}
                           </div>
                         </div>
                       }
@@ -216,28 +227,28 @@
                 }
 
                 @if (upcomingIndividualTickets.length > 0 && upcomingGroupTickets.length > 0) {
-                  <hr style="border: 0; border-top: 1px dashed rgba(79, 70, 229, 0.25); margin: 12px 0;" />
+                  <hr style="border: 0; border-top: 1px dashed rgba(79, 70, 229, 0.25); margin: 14px 0;" />
                 }
 
                 @if (upcomingGroupTickets.length > 0) {
                   <div class="upcoming-sub-group">
-                    <h4 style="font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <h4 style="font-size: 13px; font-weight: 700; color: #cbd5e1; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
                       <i class="fa-solid fa-users" style="color: #10b981;"></i> الجلسات الجماعية القادمة
                     </h4>
-                    <div class="tickets-list">
+                    <div class="tickets-grid-preview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
                       @for (ticket of upcomingGroupTickets; track ticket.id) {
-                        <div class="upcoming-ticket-card" style="background: #ffffff; padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; border-right: 4px solid #10b981; box-shadow: 0 2px 4px rgba(0,0,0,0.04);">
+                        <div class="upcoming-ticket-card" style="background: #071220; padding: 12px 16px; border-radius: 8px; border-right: 4px solid #10b981; border-top: 1px solid #142a49; border-bottom: 1px solid #142a49; border-left: 1px solid #142a49;">
                           <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                             @if (ticket.sessionNumber) {
-                              <span style="background: rgba(16, 185, 129, 0.12); color: #047857; padding: 2px 7px; border-radius: 5px; font-size: 12px; font-weight: 800;">جلسة #{{ ticket.sessionNumber }}</span>
+                              <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 800;">جلسة #{{ ticket.sessionNumber }}</span>
                             }
                             @if (ticket.title) {
-                              <span style="color: #111827; font-size: 13px; font-weight: 800;">{{ ticket.title }}</span>
+                              <span style="color: #f1f5f9; font-size: 13px; font-weight: 800;">{{ ticket.title }}</span>
                             }
                           </div>
-                          <strong style="color: #111827; font-size: 14px;">{{ ticket.type }} - {{ ticket.specialist }}</strong>
-                          <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-                            <i class="fa-regular fa-clock" style="margin-left: 4px;"></i> {{ ticket.day }}، {{ ticket.date }} - {{ ticket.time }}
+                          <strong style="color: #f8fafc; font-size: 13px;">{{ ticket.type }} - {{ ticket.specialist }}</strong>
+                          <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">
+                            <i class="fa-regular fa-clock" style="margin-left: 4px; color: #38bdf8;"></i> {{ ticket.day }}، {{ ticket.date }} - {{ ticket.time }}
                           </div>
                         </div>
                       }
@@ -263,7 +274,7 @@
               <p>لا يوجد جلسات جماعية متاحة حالياً</p>
             </div>
           } @else {
-            <div class="tickets">
+            <div class="tickets full-width-tickets">
               @for (session of sessions; track session.selectionKey) {
                 <app-ticket
                   [ticket]="toTicketData(session)"
@@ -312,71 +323,71 @@
               }
             }
           </div>
-        }
+        </div>
+      }
 
-        <!-- History Tabs: Attended / Missed / Upcoming Paid -->
-        @if (activeMainTab !== 'available') {
-          <div class="tab-sessions-panel">
-            <div class="tab-panel-header">
-              <div class="header-left">
-                <i [class]="getTabIcon(activeMainTab)" style="font-size: 20px;"></i>
-                <h2>{{ getTabTitle(activeMainTab) }}</h2>
-              </div>
-              <span class="count-pill">{{ getCurrentTabTickets().length }} محاضرات</span>
+      <!-- TAB 3, 4, 5: Attended / Missed / Upcoming Paid (Full Page Width) -->
+      @if (activeMainTab === 'attended' || activeMainTab === 'missed' || activeMainTab === 'upcomingPaid') {
+        <div class="tab-sessions-panel full-width-panel">
+          <div class="tab-panel-header">
+            <div class="header-left">
+              <i [class]="getTabIcon(activeMainTab)" style="font-size: 22px;"></i>
+              <h2>{{ getTabTitle(activeMainTab) }}</h2>
             </div>
-
-            @if (historyLoading) {
-              <div class="empty-state">
-                <p>جاري تحميل سجل المحاضرات...</p>
-              </div>
-            } @else if (!getCurrentTabTickets().length) {
-              <div class="empty-state">
-                <i class="fa-solid fa-folder-open" style="font-size: 38px; color: #475569; margin-bottom: 12px; display: block;"></i>
-                <p>{{ getEmptyMessage(activeMainTab) }}</p>
-              </div>
-            } @else {
-              <div class="tab-tickets-list">
-                @for (ticket of getCurrentTabTickets(); track ticket.id) {
-                  <article class="tab-session-card" [class]="ticket.status">
-                    <div class="card-header-row">
-                      <div class="badges-row">
-                        @if (ticket.sessionNumber) {
-                          <span class="session-num-badge">جلسة #{{ ticket.sessionNumber }}</span>
-                        }
-                        <span class="ticket-type-badge">{{ ticket.type }}</span>
-                      </div>
-                      <strong class="ticket-price">{{ ticket.amount }}</strong>
-                    </div>
-
-                    @if (ticket.title) {
-                      <h3 class="card-title">{{ ticket.title }}</h3>
-                    }
-
-                    <div class="card-details-grid">
-                      <div class="detail-item">
-                        <i class="fa-solid fa-user-doctor"></i>
-                        <span>{{ ticket.specialist }}</span>
-                      </div>
-                      <div class="detail-item">
-                        <i class="fa-regular fa-clock"></i>
-                        <span>{{ ticket.day }}، {{ ticket.date }} — {{ ticket.time }}</span>
-                      </div>
-                    </div>
-
-                    <div class="card-footer-row">
-                      <span class="status-indicator-badge" [class]="ticket.status">
-                        <i [class]="getStatusIcon(ticket.status)"></i>
-                        {{ ticket.statusLabel }}
-                      </span>
-                    </div>
-                  </article>
-                }
-              </div>
-            }
+            <span class="count-pill">{{ getCurrentTabTickets().length }} محاضرات</span>
           </div>
-        }
 
-      </aside>
+          @if (historyLoading) {
+            <div class="empty-state">
+              <p>جاري تحميل سجل المحاضرات...</p>
+            </div>
+          } @else if (!getCurrentTabTickets().length) {
+            <div class="empty-state">
+              <i class="fa-solid fa-folder-open" style="font-size: 42px; color: #475569; margin-bottom: 14px; display: block;"></i>
+              <p>{{ getEmptyMessage(activeMainTab) }}</p>
+            </div>
+          } @else {
+            <div class="tab-tickets-grid">
+              @for (ticket of getCurrentTabTickets(); track ticket.id) {
+                <article class="tab-session-card" [class]="ticket.status">
+                  <div class="card-header-row">
+                    <div class="badges-row">
+                      @if (ticket.sessionNumber) {
+                        <span class="session-num-badge">جلسة #{{ ticket.sessionNumber }}</span>
+                      }
+                      <span class="ticket-type-badge">{{ ticket.type }}</span>
+                    </div>
+                    <strong class="ticket-price">{{ ticket.amount }}</strong>
+                  </div>
+
+                  @if (ticket.title) {
+                    <h3 class="card-title">{{ ticket.title }}</h3>
+                  }
+
+                  <div class="card-details-grid">
+                    <div class="detail-item">
+                      <i class="fa-solid fa-user-doctor"></i>
+                      <span>{{ ticket.specialist }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <i class="fa-regular fa-clock"></i>
+                      <span>{{ ticket.day }}، {{ ticket.date }} — {{ ticket.time }}</span>
+                    </div>
+                  </div>
+
+                  <div class="card-footer-row">
+                    <span class="status-indicator-badge" [class]="ticket.status">
+                      <i [class]="getStatusIcon(ticket.status)"></i>
+                      {{ ticket.statusLabel }}
+                    </span>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </div>
+      }
+
     </div>
   </main>
 

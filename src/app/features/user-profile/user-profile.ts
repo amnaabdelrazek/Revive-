@@ -89,7 +89,7 @@ export class UserProfile implements OnInit {
   upcomingHistoryTickets: SessionTicket[] = [];
   hasNoSessions = false;
 
-  activeMainTab: 'available' | 'attended' | 'missed' | 'upcomingPaid' = 'available';
+  activeMainTab: 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid' = 'profile';
 
   selectedSessionKey: string | null = null;
   bookingConfirmed = false;
@@ -191,9 +191,9 @@ export class UserProfile implements OnInit {
     this.loadHistorySessions();
   }
 
-  switchMainTab(tab: 'available' | 'attended' | 'missed' | 'upcomingPaid'): void {
+  switchMainTab(tab: 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid'): void {
     this.activeMainTab = tab;
-    if (tab !== 'available' && !this.attendedHistoryTickets.length && !this.missedHistoryTickets.length && !this.upcomingHistoryTickets.length) {
+    if (tab !== 'available' && tab !== 'profile' && !this.attendedHistoryTickets.length && !this.missedHistoryTickets.length && !this.upcomingHistoryTickets.length) {
       this.loadHistorySessions();
     }
   }
@@ -213,6 +213,8 @@ export class UserProfile implements OnInit {
 
   getTabIcon(tab: string): string {
     switch (tab) {
+      case 'profile':
+        return 'fa-solid fa-user text-info';
       case 'attended':
         return 'fa-solid fa-circle-check text-success';
       case 'missed':
@@ -226,6 +228,8 @@ export class UserProfile implements OnInit {
 
   getTabTitle(tab: string): string {
     switch (tab) {
+      case 'profile':
+        return 'الملف الشخصي';
       case 'attended':
         return 'محاضرات مكتملة';
       case 'missed':
