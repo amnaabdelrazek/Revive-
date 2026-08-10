@@ -52,7 +52,7 @@ interface SessionTicket {
   time: string;
   specialist: string;
   type: string;
-  status: 'paid' | 'upcoming' | 'finished' | 'cancelled' | 'available';
+  status: 'paid' | 'upcoming' | 'finished' | 'missed' | 'cancelled' | 'available';
   statusLabel: string;
   amount: string;
 }
@@ -85,13 +85,14 @@ export class UserProfile implements OnInit {
   sessions: RecoverySession[] = [];
   historyTickets: SessionTicket[] = [];
   attendedHistoryTickets: SessionTicket[] = [];
+  missedHistoryTickets: SessionTicket[] = [];
   upcomingHistoryTickets: SessionTicket[] = [];
   hasNoSessions = false;
 
+  activeMainTab: 'available' | 'attended' | 'missed' | 'upcomingPaid' = 'available';
+
   selectedSessionKey: string | null = null;
   bookingConfirmed = false;
-  historyOpen = false;
-  activeHistoryTab: 'attended' | 'upcoming' = 'attended';
   bookingModalOpen = false;
   historyLoading = false;
   historyError = '';
@@ -166,7 +167,7 @@ export class UserProfile implements OnInit {
   }
 
   get hasHistoryTickets(): boolean {
-    return this.attendedHistoryTickets.length > 0 || this.upcomingHistoryTickets.length > 0;
+    return this.attendedHistoryTickets.length > 0 || this.missedHistoryTickets.length > 0 || this.upcomingHistoryTickets.length > 0;
   }
 
   ngOnInit(): void {
@@ -187,6 +188,80 @@ export class UserProfile implements OnInit {
     });
 
     this.loadSessions();
+    this.loadHistorySessions();
+  }
+
+  switchMainTab(tab: 'available' | 'attended' | 'missed' | 'upcomingPaid'): void {
+    this.activeMainTab = tab;
+    if (tab !== 'available' && !this.attendedHistoryTickets.length && !this.missedHistoryTickets.length && !this.upcomingHistoryTickets.length) {
+      this.loadHistorySessions();
+    }
+  }
+
+  getCurrentTabTickets(): SessionTicket[] {
+    switch (this.activeMainTab) {
+      case 'attended':
+        return this.attendedHistoryTickets;
+      case 'missed':
+        return this.missedHistoryTickets;
+      case 'upcomingPaid':
+        return this.upcomingHistoryTickets;
+      default:
+        return [];
+    }
+  }
+
+  getTabIcon(tab: string): string {
+    switch (tab) {
+      case 'attended':
+        return 'fa-solid fa-circle-check text-success';
+      case 'missed':
+        return 'fa-solid fa-circle-xmark text-warning';
+      case 'upcomingPaid':
+        return 'fa-solid fa-calendar-check text-primary';
+      default:
+        return 'fa-solid fa-calendar';
+    }
+  }
+
+  getTabTitle(tab: string): string {
+    switch (tab) {
+      case 'attended':
+        return 'محاضرات مكتملة';
+      case 'missed':
+        return 'محاضرات فائتة';
+      case 'upcomingPaid':
+        return 'محاضرات قادمة';
+      default:
+        return 'الجلسات';
+    }
+  }
+
+  getEmptyMessage(tab: string): string {
+    switch (tab) {
+      case 'attended':
+        return 'لا توجد محاضرات مكتملة حتى الآن';
+      case 'missed':
+        return 'لا توجد محاضرات فائتة حتى الآن';
+      case 'upcomingPaid':
+        return 'لا توجد محاضرات قادمة حتى الآن';
+      default:
+        return 'لا توجد بيانات';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'finished':
+        return 'fa-solid fa-circle-check';
+      case 'missed':
+        return 'fa-solid fa-circle-xmark';
+      case 'upcoming':
+      case 'paid':
+        return 'fa-solid fa-calendar-check';
+      default:
+        return 'fa-solid fa-info-circle';
+    }
   }
 
   loadSessions(): void {
@@ -232,6 +307,7 @@ export class UserProfile implements OnInit {
         this.upcomingGroupTickets = [];
         this.historyTickets = [];
         this.attendedHistoryTickets = [];
+        this.missedHistoryTickets = [];
         this.upcomingHistoryTickets = [];
         this.hasNoSessions = true;
         this.hasAvailableIndividualSession = false;
@@ -281,16 +357,6 @@ export class UserProfile implements OnInit {
     return Math.round((session.seatsReserved / session.seatsTotal) * 100);
   }
 
-  openHistory(): void {
-    this.historyOpen = true;
-    this.activeHistoryTab = 'attended';
-    this.loadHistorySessions();
-  }
-
-  selectHistoryTab(tab: 'attended' | 'upcoming'): void {
-    this.activeHistoryTab = tab;
-  }
-
   loadHistorySessions(): void {
     this.historyLoading = true;
     this.historyError = '';
@@ -312,8 +378,9 @@ export class UserProfile implements OnInit {
 
         const allPaid = Array.from(ticketsMap.values());
 
-        this.attendedHistoryTickets = allPaid;
-        this.upcomingHistoryTickets = upcomingMapped;
+        this.attendedHistoryTickets = allPaid.filter(t => t.status === 'finished');
+        this.missedHistoryTickets = allPaid.filter(t => t.status === 'missed');
+        this.upcomingHistoryTickets = upcomingMapped.filter(t => t.status === 'upcoming' || t.status === 'paid');
         this.historyTickets = allPaid;
 
         this.historyLoading = false;
@@ -323,6 +390,7 @@ export class UserProfile implements OnInit {
       error: () => {
         this.historyTickets = [];
         this.attendedHistoryTickets = [];
+        this.missedHistoryTickets = [];
         this.upcomingHistoryTickets = [];
         this.historyLoading = false;
         this.historyError = 'تعذر تحميل سجل الجلسات';
@@ -330,10 +398,6 @@ export class UserProfile implements OnInit {
         this.cdr.detectChanges();
       },
     });
-  }
-
-  closeHistory(): void {
-    this.historyOpen = false;
   }
 
   openBookingModal(): void {
@@ -636,14 +700,19 @@ export class UserProfile implements OnInit {
   private mapHistoryTickets(response: SessionApiResponse): SessionTicket[] {
     return (response?.body?.sessions ?? []).map((session) => {
       const status = session.status?.toLowerCase();
-      const attendance = (session as any).attendance_status || (session as any).attendance?.status;
+      const attendance = (session as any).attendance_status || (session as any).attendance?.status || (session as any).was_present;
 
       let ticketStatus: SessionTicket['status'] = 'paid';
       let statusLabel = 'جلسة مدفوعة';
 
       if (status === 'finished' || status === 'completed') {
-        ticketStatus = 'finished';
-        statusLabel = attendance === 'absent' ? 'لم يتم الحضور (مدفوعة)' : 'تمت الجلسة (مدفوعة)';
+        if (attendance === 'absent' || attendance === false || attendance === 'false') {
+          ticketStatus = 'missed';
+          statusLabel = 'لم يتم الحضور (مدفوعة)';
+        } else {
+          ticketStatus = 'finished';
+          statusLabel = 'تمت الجلسة (مدفوعة)';
+        }
       } else if (status === 'cancelled') {
         ticketStatus = 'cancelled';
         statusLabel = 'ملغية';
