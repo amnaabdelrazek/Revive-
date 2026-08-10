@@ -117,8 +117,9 @@ export interface SessionApiResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly STORAGE_KEY = 'user-data';
-  private readonly AUTH_KEY = 'auth-token';
+  private readonly STORAGE_KEY = 'register_data';
+  private readonly AUTH_KEY = 'auth_token';
+  private readonly AVATAR_KEY = 'user_avatar_url';
   private readonly PENDING_VERIFY_KEY = 'pending-verify-token';
   private readonly apiBaseUrl = environment.apiBaseUrl;
 
@@ -250,6 +251,18 @@ export class AuthService {
     return this.http.post<any>(`${this.apiBaseUrl}profile/avatar`, formData, { headers });
   }
 
+  updateProfile(payload: any): Observable<any> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+    return this.http.put<any>(`${this.apiBaseUrl}user`, payload, { headers });
+  }
+
+  changePassword(payload: any): Observable<any> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+    return this.http.post<any>(`${this.apiBaseUrl}user/change-password`, payload, { headers });
+  }
+
   saveRegisterData(data: Partial<RegisterData>): void {
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
   }
@@ -269,11 +282,39 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.AUTH_KEY);
+    localStorage.removeItem(this.AVATAR_KEY);
     this.clearData();
   }
 
   clearData(): void {
     localStorage.removeItem(this.STORAGE_KEY);
+  }
+
+  getFormattedAvatarUrl(url: string | null): string | null {
+    if (!url) {
+      return null;
+    }
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const cleanPath = url.startsWith('/') ? url : '/' + url;
+    return `https://solid.runasp.net${cleanPath}`;
+  }
+
+  saveAvatarUrl(url: string | null): void {
+    if (url) {
+      const formatted = this.getFormattedAvatarUrl(url);
+      if (formatted) {
+        localStorage.setItem(this.AVATAR_KEY, formatted);
+      }
+    } else {
+      localStorage.removeItem(this.AVATAR_KEY);
+    }
+  }
+
+  getAvatarUrl(): string | null {
+    const raw = localStorage.getItem(this.AVATAR_KEY);
+    return this.getFormattedAvatarUrl(raw);
   }
 
   saveAuthToken(token: string): void {

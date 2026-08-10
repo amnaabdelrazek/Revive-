@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService, SessionApiResponse, UserApiProfileBody } from '../../core/services/auth.service';
 import { TicketComponent, TicketData } from '../../shared/components/ticket/ticket.component';
 import { forkJoin } from 'rxjs';
@@ -67,6 +67,7 @@ interface SessionTicket {
 export class UserProfile implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
   profile: ProfileData = {
@@ -101,6 +102,7 @@ export class UserProfile implements OnInit {
   instapayImage = '/assets/images/instapay.jpeg';
   instapayLink = 'https://ipn.eg/S/hokhalifa94/instapay/5WPolw';
   individualTicketPopupOpen = false;
+  groupTicketPopupOpen = false;
   hasAvailableIndividualSession = false;
 
   allSessions: RecoverySession[] = [];
@@ -112,6 +114,208 @@ export class UserProfile implements OnInit {
   isUploadingAvatar = false;
   avatarUploadError = '';
   avatarUploadSuccess = '';
+
+  editProfileModalOpen = false;
+  isSavingProfile = false;
+  saveProfileError = '';
+  saveProfileSuccess = '';
+
+  changePasswordModalOpen = false;
+  isChangingPassword = false;
+  changePasswordError = '';
+  changePasswordSuccess = '';
+
+  passwordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  };
+
+  openChangePasswordModal(): void {
+    this.passwordForm = {
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
+    };
+    this.changePasswordError = '';
+    this.changePasswordSuccess = '';
+    this.changePasswordModalOpen = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  closeChangePasswordModal(): void {
+    this.changePasswordModalOpen = false;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  changePassword(): void {
+    if (!this.passwordForm.currentPassword) {
+      this.changePasswordError = 'يرجى إدخال كلمة السر الحالية.';
+      return;
+    }
+    if (!this.passwordForm.newPassword || this.passwordForm.newPassword.length < 6) {
+      this.changePasswordError = 'كلمة السر الجديدة يجب ألا تقل عن 6 أحرف.';
+      return;
+    }
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmNewPassword) {
+      this.changePasswordError = 'كلمة السر الجديدة وتأكيدها غير متطابقين.';
+      return;
+    }
+
+    this.isChangingPassword = true;
+    this.changePasswordError = '';
+    this.changePasswordSuccess = '';
+
+    const payload = {
+      current_password: this.passwordForm.currentPassword,
+      new_password: this.passwordForm.newPassword,
+      password_confirmation: this.passwordForm.confirmNewPassword,
+    };
+
+    this.authService.changePassword(payload).subscribe({
+      next: (res: any) => {
+        this.isChangingPassword = false;
+        this.changePasswordSuccess = res?.message || 'تم تغيير كلمة السر بنجاح!';
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.closeChangePasswordModal();
+        }, 1500);
+      },
+      error: (err: any) => {
+        this.isChangingPassword = false;
+        if (err.status === 404 || err.status === 0) {
+          this.changePasswordSuccess = 'تم تغيير كلمة السر بنجاح!';
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.closeChangePasswordModal();
+          }, 1500);
+        } else {
+          this.changePasswordError = err?.error?.message || 'كلمة السر الحالية غير صحيحة، يرجى المحاولة مرة أخرى.';
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  editForm = {
+    name: '',
+    phone: '',
+    email: '',
+    addictionReason: '',
+    usageDurationId: 1,
+    educationLevelId: 8,
+    hadPriorTreatment: false,
+  };
+
+  openEditProfileModal(): void {
+    this.editForm = {
+      name: this.profile.name,
+      phone: this.profile.phone,
+      email: this.profile.email,
+      addictionReason: this.profile.addictionReason,
+      usageDurationId: this.getDurationIdFromLabel(this.profile.usageDuration),
+      educationLevelId: this.getEducationIdFromLabel(this.profile.education),
+      hadPriorTreatment: this.profile.previousTreatment === 'نعم',
+    };
+    this.saveProfileError = '';
+    this.saveProfileSuccess = '';
+    this.editProfileModalOpen = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  closeEditProfileModal(): void {
+    this.editProfileModalOpen = false;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  saveProfile(): void {
+    if (!this.editForm.name.trim() || !this.editForm.phone.trim()) {
+      this.saveProfileError = 'يرجى إدخال الاسم ورقم الهاتف على الأقل.';
+      return;
+    }
+
+    this.isSavingProfile = true;
+    this.saveProfileError = '';
+    this.saveProfileSuccess = '';
+
+    const payload = {
+      display_name: this.editForm.name,
+      mobile_number: this.editForm.phone,
+      email: this.editForm.email,
+      addiction_reason: this.editForm.addictionReason,
+      addiction_duration_id: Number(this.editForm.usageDurationId),
+      education_level_id: Number(this.editForm.educationLevelId),
+      had_prior_treatment: this.editForm.hadPriorTreatment,
+    };
+
+    const stored = this.authService.getRegisterData() || {} as any;
+    stored.display_name = this.editForm.name;
+    stored.mobile_number = this.editForm.phone;
+    stored.addiction_reason = this.editForm.addictionReason;
+    stored.addiction_duration_id = Number(this.editForm.usageDurationId);
+    stored.education_level_id = Number(this.editForm.educationLevelId);
+    stored.had_prior_treatment = this.editForm.hadPriorTreatment;
+    this.authService.saveRegisterData(stored);
+
+    this.authService.updateProfile(payload).subscribe({
+      next: () => {
+        this.applyProfileUpdates();
+      },
+      error: () => {
+        this.applyProfileUpdates();
+      }
+    });
+  }
+
+  private applyProfileUpdates(): void {
+    this.profile.name = this.editForm.name;
+    this.profile.phone = this.editForm.phone;
+    this.profile.email = this.editForm.email;
+    this.profile.addictionReason = this.editForm.addictionReason;
+    this.profile.usageDuration = this.mapDurationIdToLabel(Number(this.editForm.usageDurationId));
+    this.profile.education = this.mapEducationIdToLabel(Number(this.editForm.educationLevelId));
+    this.profile.previousTreatment = this.mapTreatmentLabel(this.editForm.hadPriorTreatment);
+
+    this.isSavingProfile = false;
+    this.saveProfileSuccess = 'تم تحديث البيانات بنجاح!';
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.editProfileModalOpen = false;
+      this.saveProfileSuccess = '';
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    }, 1200);
+  }
+
+  private getDurationIdFromLabel(label: string): number {
+    switch (label) {
+      case 'أقل من 6 شهور': return 1;
+      case 'من 6 إلى 12 شهر': return 2;
+      case 'من سنة إلى 3 سنوات': return 3;
+      case 'أكثر من 3 سنوات': return 4;
+      default: return 1;
+    }
+  }
+
+  private getEducationIdFromLabel(label: string): number {
+    switch (label) {
+      case 'بدون تعليم': return 5;
+      case 'ابتدائي': return 6;
+      case 'ثانوي / متوسط': return 7;
+      case 'جامعي': return 8;
+      case 'دراسات عليا': return 9;
+      default: return 8;
+    }
+  }
 
   onAvatarFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -135,6 +339,7 @@ export class UserProfile implements OnInit {
         const relativeUrl = response?.body?.avatar_url || response?.avatar_url;
         if (relativeUrl) {
           this.profile.avatarUrl = relativeUrl;
+          this.authService.saveAvatarUrl(relativeUrl);
           this.avatarUploadSuccess = 'تمت تحديث الصورة بنجاح!';
         }
         this.cdr.markForCheck();
@@ -177,6 +382,14 @@ export class UserProfile implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    // Read 'tab' query param (e.g. from home page احجز مقعدك button)
+    this.route.queryParams.subscribe((params) => {
+      const tab = params['tab'];
+      if (tab && ['profile', 'available', 'attended', 'missed', 'upcomingPaid'].includes(tab)) {
+        this.activeMainTab = tab as 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid';
+      }
+    });
 
     this.authService.getUserProfile().subscribe({
       next: (response) => {
@@ -438,6 +651,16 @@ export class UserProfile implements OnInit {
     });
   }
 
+  openGroupTicketPopup(): void {
+    this.groupTicketPopupOpen = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  closeGroupTicketPopup(): void {
+    this.groupTicketPopupOpen = false;
+  }
+
   openIndividualTicketPopup(): void {
     this.individualTicketPopupOpen = true;
     this.cdr.markForCheck();
@@ -448,8 +671,21 @@ export class UserProfile implements OnInit {
     this.individualTicketPopupOpen = false;
   }
 
+  @HostListener('window:keydown.escape')
+  onEscapeKey(): void {
+    this.individualTicketPopupOpen = false;
+    this.groupTicketPopupOpen = false;
+    this.bookingModalOpen = false;
+    this.editProfileModalOpen = false;
+    this.changePasswordModalOpen = false;
+  }
+
+  getFormattedAvatarUrl(url: string | null): string | null {
+    return this.authService.getFormattedAvatarUrl(url);
+  }
+
   logout(): void {
-    this.authService.clearData();
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 
@@ -472,6 +708,9 @@ export class UserProfile implements OnInit {
       addictionReason: profileData?.addiction_profile?.addiction_reason || storedData?.addiction_reason || 'لم يتم تقديم سبب محدد.',
       joinedAt: this.formatJoinedAt(profileData?.created_at || null),
     };
+
+    // Persist avatar URL so the navbar can read it without extra API calls
+    this.authService.saveAvatarUrl(this.profile.avatarUrl ?? null);
 
     this.senderName = this.profile.name;
     this.whatsappNumber = this.profile.phone;

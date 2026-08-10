@@ -15,9 +15,24 @@ export class NavbarComponent implements OnInit {
   private router = inject(Router);
 
   isLoggedIn = false;
+  avatarUrl: string | null = null;
 
   ngOnInit(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
+    this.avatarUrl = this.authService.getAvatarUrl();
+
+    if (this.isLoggedIn) {
+      this.authService.getUserProfile().subscribe({
+        next: (res) => {
+          const rawUrl = res?.body?.avatar_url;
+          if (rawUrl) {
+            this.authService.saveAvatarUrl(rawUrl);
+            this.avatarUrl = this.authService.getAvatarUrl();
+          }
+        },
+        error: () => {}
+      });
+    }
   }
 
   logout(): void {

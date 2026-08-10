@@ -7,49 +7,20 @@
       </div>
     </a>
 
-    <nav>
-      <a routerLink="/home">
+    <nav class="topbar-actions">
+      <a routerLink="/home" class="nav-home-link">
         <i class="fa-solid fa-house"></i>
         الرئيسية
       </a>
+      <button type="button" class="logout-btn" (click)="logout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        تسجيل الخروج
+      </button>
     </nav>
   </header>
 
   <main class="profile-shell">
-    <!-- Hero Banner -->
-    <section class="profile-hero">
-      <div class="avatar-upload-wrapper" style="position: relative; display: inline-block;">
-        <div class="avatar" aria-hidden="true" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          @if (profile.avatarUrl) {
-            <img [src]="profile.avatarUrl.startsWith('http') ? profile.avatarUrl : ('http://solid.runasp.net' + profile.avatarUrl)" alt="Profile Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
-          } @else {
-            {{ profile.name.charAt(0) }}
-          }
-        </div>
-        <label for="avatarFileInput" class="avatar-upload-trigger" title="تغيير الصورة الشخصية" style="position: absolute; bottom: 0; left: 0; background: #4f46e5; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
-          <i class="fa-solid fa-camera" style="font-size: 13px;"></i>
-        </label>
-        <input id="avatarFileInput" type="file" (change)="onAvatarFileSelected($event)" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" />
-      </div>
-
-      <div class="hero-copy">
-        <span class="status">
-          <i class="fa-solid fa-circle-check"></i>
-          حساب موثّق وآمن
-        </span>
-
-        <h1>أهلاً، {{ profile.name }}</h1>
-
-        <p>كل خطوة صغيرة اليوم تقرّبك من الحياة التي تستحقها.</p>
-      </div>
-
-      <div class="member-since">
-        <small>عضو منذ</small>
-        <strong>{{ profile.joinedAt }}</strong>
-      </div>
-    </section>
-
-    <!-- Sub-Navbar / Main Navigation Tabs -->
+    <!-- Sub-Navbar / Main Navigation Tabs (Top level above all content) -->
     <nav class="profile-tabs-bar">
       <button
         type="button"
@@ -108,83 +79,140 @@
     <!-- Full Width Content Section for Dedicated Tabs -->
     <div class="full-width-content">
 
-      <!-- TAB 1: Profile Info (Full Page Width) -->
+      <!-- TAB 1: Profile Info (Contains Hero Banner + Personal Data + Recovery Journey) -->
       @if (activeMainTab === 'profile') {
-        <div class="profile-panels-wrapper">
-          <section class="panel">
-            <div class="panel-title">
-              <div>
-                <i class="fa-solid fa-user"></i>
-                <span>
-                  <h2>البيانات الشخصية</h2>
-                  <p>بيانات التواصل الأساسية الخاصّ بك</p>
-                </span>
+        <div class="profile-tab-container">
+          <!-- Hero Banner (Inside Profile Tab Only) -->
+          <section class="profile-hero" style="margin-bottom: 24px;">
+            <div class="avatar-upload-wrapper" style="position: relative; display: inline-block;">
+              <div class="avatar" aria-hidden="true" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                @if (profile.avatarUrl) {
+                  <img [src]="getFormattedAvatarUrl(profile.avatarUrl)" alt="Profile Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                } @else {
+                  {{ profile.name.charAt(0) }}
+                }
               </div>
+              <label for="avatarFileInput" class="avatar-upload-trigger" title="تغيير الصورة الشخصية" style="position: absolute; bottom: 0; left: 0; background: #4f46e5; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                <i class="fa-solid fa-camera" style="font-size: 13px;"></i>
+              </label>
+              <input id="avatarFileInput" type="file" (change)="onAvatarFileSelected($event)" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;" />
             </div>
 
-            <div class="info-grid">
-              <article>
-                <i class="fa-solid fa-id-badge"></i>
-                <span>
-                  <small>الاسم بالكامل</small>
-                  <strong>{{ profile.name }}</strong>
-                </span>
-              </article>
-
-              <article>
-                <i class="fa-brands fa-whatsapp"></i>
-                <span>
-                  <small>رقم الواتساب</small>
-                  <strong dir="ltr">{{ profile.phone }}</strong>
-                </span>
-              </article>
-            </div>
-          </section>
-
-          <section class="panel recovery-panel">
-            <div class="panel-title">
-              <div>
-                <i class="fa-solid fa-heart-pulse"></i>
-                <span>
-                  <h2>ملف رحلة التعافي</h2>
-                  <p>المعلومات التي شاركتها معنا</p>
-                </span>
-              </div>
-
-              <span class="private">
-                <i class="fa-solid fa-shield-halved"></i>
-                سري ومحمي
+            <div class="hero-copy">
+              <span class="status">
+                <i class="fa-solid fa-circle-check"></i>
+                حساب موثّق وآمن
               </span>
+
+              <h1>أهلاً، {{ profile.name }}</h1>
+
+              <p>كل خطوة صغيرة اليوم تقرّبك من الحياة التي تستحقها.</p>
             </div>
 
-            <div class="recovery-grid">
-              <article>
-                <small>نوع المخدر</small>
-                <strong>{{ profile.drugType }}</strong>
-                <p>{{ profile.drugDetails }}</p>
-              </article>
-
-              <article>
-                <small>فترة التعاطي</small>
-                <strong>{{ profile.usageDuration }}</strong>
-              </article>
-
-              <article>
-                <small>سابقة العلاج</small>
-                <strong>{{ profile.previousTreatment }}</strong>
-              </article>
-
-              <article>
-                <small>المستوى التعليمي</small>
-                <strong>{{ profile.education }}</strong>
-              </article>
-
-              <article class="reason">
-                <small>أسباب الإدمان</small>
-                <p>{{ profile.addictionReason }}</p>
-              </article>
+            <div class="member-since">
+              <small>عضو منذ</small>
+              <strong>{{ profile.joinedAt }}</strong>
             </div>
           </section>
+
+          <!-- Personal Info & Recovery Panels Grid -->
+          <div class="profile-panels-wrapper">
+            <section class="panel">
+              <div class="panel-title">
+                <div>
+                  <i class="fa-solid fa-user"></i>
+                  <span>
+                    <h2>البيانات الشخصية</h2>
+                    <p>بيانات التواصل الأساسية الخاصة بك</p>
+                  </span>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                  <button type="button" class="edit-btn" (click)="openEditProfileModal()">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    تعديل البيانات
+                  </button>
+                  <button type="button" class="edit-btn" style="color: #f5b83d; border-color: rgba(245, 184, 61, 0.4); background: rgba(245, 184, 61, 0.08);" (click)="openChangePasswordModal()">
+                    <i class="fa-solid fa-key"></i>
+                    تغيير كلمة السر
+                  </button>
+                </div>
+              </div>
+
+              <div class="info-grid">
+                <article>
+                  <i class="fa-solid fa-id-badge"></i>
+                  <span>
+                    <small>الاسم بالكامل</small>
+                    <strong>{{ profile.name }}</strong>
+                  </span>
+                </article>
+
+                <article>
+                  <i class="fa-brands fa-whatsapp"></i>
+                  <span>
+                    <small>رقم الواتساب</small>
+                    <strong dir="ltr">{{ profile.phone }}</strong>
+                  </span>
+                </article>
+
+                @if (profile.email) {
+                  <article class="full">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>
+                      <small>البريد الإلكتروني</small>
+                      <strong dir="ltr">{{ profile.email }}</strong>
+                    </span>
+                  </article>
+                }
+              </div>
+            </section>
+
+            <section class="panel recovery-panel">
+              <div class="panel-title">
+                <div>
+                  <i class="fa-solid fa-heart-pulse"></i>
+                  <span>
+                    <h2>ملف رحلة التعافي</h2>
+                    <p>المعلومات التي شاركتها معنا</p>
+                  </span>
+                </div>
+
+                <span class="private">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  سري ومحمي
+                </span>
+              </div>
+
+              <div class="recovery-grid">
+                <article>
+                  <small>نوع المخدر</small>
+                  <strong>{{ profile.drugType }}</strong>
+                  <p>{{ profile.drugDetails }}</p>
+                </article>
+
+                <article>
+                  <small>فترة التعاطي</small>
+                  <strong>{{ profile.usageDuration }}</strong>
+                </article>
+
+                <article>
+                  <small>سابقة العلاج</small>
+                  <strong>{{ profile.previousTreatment }}</strong>
+                </article>
+
+                <article>
+                  <small>المستوى التعليمي</small>
+                  <strong>{{ profile.education }}</strong>
+                </article>
+
+                <article class="reason">
+                  <small>أسباب الإدمان</small>
+                  <p>{{ profile.addictionReason }}</p>
+                </article>
+              </div>
+            </section>
+          </div>
         </div>
       }
 
@@ -258,73 +286,67 @@
               </div>
             }
 
-            <h2>اختر جلستك</h2>
-            <h6>يمكنك إلغاء الحجز قبل موعد المحاضرة ب 8 ساعات وفقًا لسياسة الالغاء الموضحة.</h6>
-            <p>اختر الموعد الأنسب لك من الجلسات الجماعية المتاحة.</p>
+            <h2>حجز الجلسات العلاجية</h2>
+            <h6>يمكنك إلغاء الحجز قبل موعد المحاضرة بـ 8 ساعات وفقًا لسياسة الإلغاء الموضحة.</h6>
+            <p>اختر نوع الجلسة الأنسب لك للحصول على الدعم والمتابعة المتخصصة.</p>
           </div>
 
-          <button type="button" class="individual-booking-btn" [disabled]="!hasAvailableIndividualSession" [class.disabled]="!hasAvailableIndividualSession" (click)="openIndividualTicketPopup()">
-            <i class="fa-solid fa-user"></i>
-            احجز جلسة فردية
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
+          <!-- Two Large Premium Booking Buttons -->
+          <div class="booking-action-cards">
 
-          @if (hasNoSessions) {
-            <div class="empty-state">
-              <p>لا يوجد جلسات جماعية متاحة حالياً</p>
-            </div>
-          } @else {
-            <div class="tickets full-width-tickets">
-              @for (session of sessions; track session.selectionKey) {
-                <app-ticket
-                  [ticket]="toTicketData(session)"
-                  [selected]="selectedSessionKey === session.selectionKey"
-                  [showSelection]="true"
-                  (select)="selectSession(session)"
-                ></app-ticket>
-              }
-            </div>
-          }
-
-          <div class="booking-box" [class.confirmed]="bookingConfirmed">
-            @if (bookingConfirmed) {
-              <i class="fa-solid fa-circle-check success-icon"></i>
-
-              <div>
-                <strong>تم حجز جلستك بنجاح</strong>
-                <small>سنرسل تفاصيل الجلسة إلى بريدك وواتساب.</small>
+            <!-- Group Sessions Card Button -->
+            <button
+              type="button"
+              class="book-card-btn book-card-group"
+              [disabled]="groupSessions.length === 0"
+              [class.disabled]="groupSessions.length === 0"
+              (click)="openGroupTicketPopup()"
+            >
+              <div class="book-card-glow book-card-glow--green"></div>
+              <div class="book-card-inner">
+                <div class="book-card-icon-wrap book-card-icon-wrap--green">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="book-card-text">
+                  <strong>احجز جلسة جماعية</strong>
+                  <span>مشاركة وتفاعل مع مجموعة دعم متكاملة</span>
+                  <small>انضم الآن · متاح</small>
+                </div>
               </div>
-            } @else if (selectedSession; as session) {
-              @if (session.category === 'paid') {
-                <div class="booking-summary">
-                  <span>
-                    <small>الحالة</small>
-                    <strong>{{ session.categoryLabel }}</strong>
-                  </span>
+              <div class="book-card-arrow">
+                <i class="fa-solid fa-arrow-left"></i>
+              </div>
+            </button>
 
-                  <i class="fa-solid fa-calendar-xmark"></i>
+            <!-- Individual Sessions Card Button -->
+            <button
+              type="button"
+              class="book-card-btn book-card-individual"
+              [disabled]="!hasAvailableIndividualSession"
+              [class.disabled]="!hasAvailableIndividualSession"
+              (click)="openIndividualTicketPopup()"
+            >
+              <div class="book-card-glow book-card-glow--blue"></div>
+              <div class="book-card-inner">
+                <div class="book-card-icon-wrap book-card-icon-wrap--blue">
+                  <i class="fa-solid fa-user-doctor"></i>
                 </div>
-              } @else {
-                <div class="booking-summary">
-                  <span>
-                    <small>موعدك المختار</small>
-                    <strong>
-                      {{ session.day }}، {{ session.date }} - {{ session.time }}
-                    </strong>
-                  </span>
-
-                  <i class="fa-solid fa-calendar-check"></i>
+                <div class="book-card-text">
+                  <strong>احجز جلسة فردية</strong>
+                  <span>جلسة خاصة مع طبيب أو أخصائي متخصص</span>
+                  <small>جلسة مخصصة · متاح</small>
                 </div>
+              </div>
+              <div class="book-card-arrow">
+                <i class="fa-solid fa-arrow-left"></i>
+              </div>
+            </button>
 
-                <button type="button" [disabled]="session.isFull || !session.available" [class.disabled]="session.isFull || !session.available" (click)="openBookingModal()">
-                  احجز وادفع الآن
-                  <i class="fa-solid fa-arrow-left"></i>
-                </button>
-              }
-            }
           </div>
+
         </div>
       }
+
 
       <!-- TAB 3, 4, 5: Attended / Missed / Upcoming Paid (Full Page Width) -->
       @if (activeMainTab === 'attended' || activeMainTab === 'missed' || activeMainTab === 'upcomingPaid') {
@@ -447,6 +469,231 @@
             }
           }
         }
+      </section>
+    </div>
+  }
+
+  <!-- Group Ticket Popup Modal -->
+  @if (groupTicketPopupOpen) {
+    <div class="modal-backdrop" (click)="closeGroupTicketPopup()">
+      <section
+        class="profile-modal booking-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="تفاصيل الجلسات الجماعية"
+        (click)="$event.stopPropagation()"
+        style="width: min(640px, 100%);"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeGroupTicketPopup()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-heading">
+          <span>
+            <i class="fa-solid fa-users" style="color: #34d399;"></i>
+            الجلسات الجماعية المتاحة
+          </span>
+
+          <h2>اختر الجلسة الجماعية</h2>
+
+          <p>اختر الموعد الأنسب لك من الجلسات الجماعية المتاحة مع مجموعتك</p>
+        </div>
+
+        @if (groupSessions.length === 0) {
+          <div class="empty-state" style="margin-top: 12px;">
+            <p>لا توجد جلسات جماعية متاحة حالياً</p>
+          </div>
+        } @else {
+          <div class="tickets" style="margin-top: 12px;">
+            @for (session of groupSessions; track session.selectionKey) {
+              <app-ticket
+                [ticket]="toTicketData(session)"
+                [selected]="selectedSessionKey === session.selectionKey"
+                [showSelection]="true"
+                (select)="selectSession(session)"
+              ></app-ticket>
+            }
+          </div>
+
+          @if (selectedSession; as session) {
+            @if (session.sessionType === 'group') {
+              <button
+                type="button"
+                class="send-booking"
+                [disabled]="session.isFull || !session.available"
+                [class.disabled]="session.isFull || !session.available"
+                (click)="closeGroupTicketPopup(); openBookingModal()"
+              >
+                احجز وادفع الآن
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+            }
+          }
+        }
+      </section>
+    </div>
+  }
+
+  <!-- Edit Profile Modal -->
+  @if (editProfileModalOpen) {
+    <div class="modal-backdrop" (click)="closeEditProfileModal()">
+      <section
+        class="profile-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="تعديل البيانات الشخصية"
+        (click)="$event.stopPropagation()"
+        style="width: min(560px, 100%);"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeEditProfileModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-heading">
+          <span>
+            <i class="fa-solid fa-pen-to-square"></i>
+            تعديل الملف الشخصي
+          </span>
+          <h2>تحديث بيانات الحساب</h2>
+          <p>قم بتحديث معلوماتك الشخصية ورحلة تعافيك بكل سهولة</p>
+        </div>
+
+        @if (saveProfileError) {
+          <div class="alert alert-danger" style="margin: 12px 0; padding: 10px 14px; border-radius: 8px; font-size: 13px; color: #f87171; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25);">
+            {{ saveProfileError }}
+          </div>
+        }
+
+        @if (saveProfileSuccess) {
+          <div class="alert alert-success" style="margin: 12px 0; padding: 10px 14px; border-radius: 8px; font-size: 13px; color: #34d399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);">
+            {{ saveProfileSuccess }}
+          </div>
+        }
+
+        <form (ngSubmit)="saveProfile()" style="display: grid; gap: 16px; margin-top: 16px;">
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">الاسم بالكامل</label>
+            <input type="text" [(ngModel)]="editForm.name" name="name" required class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">رقم الواتساب / الهاتف</label>
+            <input type="text" [(ngModel)]="editForm.phone" name="phone" required dir="ltr" class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">البريد الإلكتروني (اختياري)</label>
+            <input type="email" [(ngModel)]="editForm.email" name="email" dir="ltr" class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">فترة التعاطي</label>
+            <select [(ngModel)]="editForm.usageDurationId" name="usageDurationId" class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;">
+              <option [value]="1">أقل من 6 شهور</option>
+              <option [value]="2">من 6 إلى 12 شهر</option>
+              <option [value]="3">من سنة إلى 3 سنوات</option>
+              <option [value]="4">أكثر من 3 سنوات</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">المستوى التعليمي</label>
+            <select [(ngModel)]="editForm.educationLevelId" name="educationLevelId" class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;">
+              <option [value]="5">بدون تعليم</option>
+              <option [value]="6">ابتدائي</option>
+              <option [value]="7">ثانوي / متوسط</option>
+              <option [value]="8">جامعي</option>
+              <option [value]="9">دراسات عليا</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">سابقة العلاج</label>
+            <select [(ngModel)]="editForm.hadPriorTreatment" name="hadPriorTreatment" class="form-input" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;">
+              <option [ngValue]="true">نعم (تلقيت علاجاً سابقاً)</option>
+              <option [ngValue]="false">لا (لم أتلقَّ علاجاً سابقاً)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">أسباب الإدمان / ملاحظات العلاج</label>
+            <textarea [(ngModel)]="editForm.addictionReason" name="addictionReason" rows="3" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0; resize: vertical;"></textarea>
+          </div>
+
+          <button type="submit" [disabled]="isSavingProfile" class="send-booking" style="margin-top: 10px;">
+            @if (isSavingProfile) {
+              جاري حفظ التعديلات...
+            } @else {
+              حفظ التعديلات
+              <i class="fa-solid fa-check"></i>
+            }
+          </button>
+        </form>
+      </section>
+    </div>
+  }
+
+  <!-- Change Password Modal -->
+  @if (changePasswordModalOpen) {
+    <div class="modal-backdrop" (click)="closeChangePasswordModal()">
+      <section
+        class="profile-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="تغيير كلمة السر"
+        (click)="$event.stopPropagation()"
+        style="width: min(480px, 100%);"
+      >
+        <button type="button" class="close-modal" aria-label="إغلاق" (click)="closeChangePasswordModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-heading">
+          <span>
+            <i class="fa-solid fa-key"></i>
+            الأمان والخصوصية
+          </span>
+          <h2>تغيير كلمة السر</h2>
+          <p>أدخل كلمة السر الحالية ثم كلمة السر الجديدة لحماية حسابك</p>
+        </div>
+
+        @if (changePasswordError) {
+          <div class="alert alert-danger" style="margin: 12px 0; padding: 10px 14px; border-radius: 8px; font-size: 13px; color: #f87171; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25);">
+            {{ changePasswordError }}
+          </div>
+        }
+
+        @if (changePasswordSuccess) {
+          <div class="alert alert-success" style="margin: 12px 0; padding: 10px 14px; border-radius: 8px; font-size: 13px; color: #34d399; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);">
+            {{ changePasswordSuccess }}
+          </div>
+        }
+
+        <form (ngSubmit)="changePassword()" style="display: grid; gap: 16px; margin-top: 16px;">
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">كلمة السر الحالية</label>
+            <input type="password" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" required class="form-input" placeholder="••••••••" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">كلمة السر الجديدة</label>
+            <input type="password" [(ngModel)]="passwordForm.newPassword" name="newPassword" required class="form-input" placeholder="••••••••" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; display: block;">تأكيد كلمة السر الجديدة</label>
+            <input type="password" [(ngModel)]="passwordForm.confirmNewPassword" name="confirmNewPassword" required class="form-input" placeholder="••••••••" style="width: 100%; height: 46px; padding: 0 14px; border-radius: 8px; border: 1px solid #1c395d; background: #07101b; color: #f5eee2; outline: 0;" />
+          </div>
+
+          <button type="submit" [disabled]="isChangingPassword" class="send-booking" style="margin-top: 10px;">
+            @if (isChangingPassword) {
+              جاري التغيير...
+            } @else {
+              تأكيد وتغيير كلمة السر
+              <i class="fa-solid fa-check"></i>
+            }
+          </button>
+        </form>
       </section>
     </div>
   }

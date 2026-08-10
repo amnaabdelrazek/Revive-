@@ -11,17 +11,18 @@
     background-clip: text;
     color: transparent;
 }
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+
 
 html,
 body {
   margin: 0;
   min-height: 100%;
-  background: #02060c;
+  background: #0b1220;
   font-family: "Cairo", Arial, sans-serif;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #3389ff #02070d;
-}
+  scrollbar-color: #1687ff #0b1220;
+}

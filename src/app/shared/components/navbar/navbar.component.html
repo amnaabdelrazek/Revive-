@@ -15,7 +15,6 @@
   <!-- Center Links Desktop -->
   <div class="navbar-links">
     <a href="#home">الرئيسية</a>
-    <a href="#company">عن الشركة</a>
     <a href="#about">عن Revive</a>
     <a href="#lectures">الخدمات</a>
     <a href="#instructor">المحاضر</a>
@@ -31,10 +30,14 @@
 
     <ng-container *ngIf="isLoggedIn">
       <a href="#" class="nav-profile" routerLink="/user-profile" title="الملف الشخصي">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <circle cx="12" cy="8" r="4"/>
-          <path d="M12 14c-5 0-8 3-8 3v6h16v-6s-3-3-8-3z"/>
-        </svg>
+        @if (avatarUrl) {
+          <img [src]="avatarUrl" alt="صورة الملف الشخصي" class="nav-avatar-img" />
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M12 14c-5 0-8 3-8 3v6h16v-6s-3-3-8-3z"/>
+          </svg>
+        }
       </a>
 
       <button (click)="logout()" class="btn btn-logout">تسجيل الخروج</button>

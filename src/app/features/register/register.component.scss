@@ -10,7 +10,7 @@ textarea {
  :host {
   display: block;
   min-height: 100vh;
-  background: #02060c;
+  background: #0d1527;
   color: #f7f3e8;
   font-family: "Cairo", "Tajawal", Arial, sans-serif;
 }
@@ -143,12 +143,12 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 100%;
   padding: 42px 40px 40px;
   border-radius: 23px;
-  background: rgba(3, 8, 15, 0.88);
-  border: 1px solid rgba(21, 61, 119, 0.75);
+  background: rgba(20, 32, 54, 0.95);
+  border: 1px solid #253a5e;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.35),
-    0 24px 80px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .form-block {
@@ -193,22 +193,22 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 54px;
   border-radius: 12px;
   color: #f5efe3;
-  background: rgba(7, 11, 18, 0.95);
-  border: 1px solid rgba(23, 65, 124, 0.85);
+  background: #142238;
+  border: 1px solid #28426d;
   box-shadow: none;
   font-size: 15px;
   padding: 0 17px;
   text-align: right;
 
   &::placeholder {
-    color: rgba(198, 190, 174, 0.44);
+    color: #8b99ae;
   }
 
   &:focus {
-    background: rgba(7, 11, 18, 1);
+    background: #192a45;
     border-color: #2682ff;
     color: #fff;
-    box-shadow: 0 0 0 3px rgba(38, 130, 255, 0.13);
+    box-shadow: 0 0 0 3px rgba(38, 130, 255, 0.18);
   }
 }
 
@@ -232,8 +232,8 @@ input[type="number"]::-webkit-inner-spin-button {
 .country-btn {
   height: 56px;
   border-radius: 12px;
-  background: rgba(7, 11, 18, 0.95);
-  border: 1px solid rgba(23, 65, 124, 0.85);
+  background: #142238;
+  border: 1px solid #28426d;
   color: #f5efe3;
   display: flex;
   align-items: center;

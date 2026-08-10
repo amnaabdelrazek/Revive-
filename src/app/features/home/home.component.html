@@ -1,7 +1,7 @@
 <section class="landing-page" dir="rtl">
   <app-navbar></app-navbar>
 
-  <main>
+  <div class="home-main">
     <section class="hero" id="home">
       <img src="/assets/images/bg-hero.jpeg" alt="شخص يبدأ رحلة جديدة فوق قمة جبل" />
 
@@ -21,10 +21,12 @@
           الدعم النفسي والإرشاد العملي في بيئة آمنة وسرية بالكامل.
         </p>
 
-        <a routerLink="/register" class="primary-btn">
-          احجز مقعدك الآن
-          <i class="fa-solid fa-chevron-left"></i>
-        </a>
+        <div class="hero-actions">
+          <a routerLink="/user-profile" [queryParams]="{tab: 'available'}" class="primary-btn">
+            احجز مقعدك الآن
+            <i class="fa-solid fa-chevron-left"></i>
+          </a>
+        </div>
 
         <span class="secure-note">
           <i class="fa-solid fa-shield-halved"></i>
@@ -339,10 +341,10 @@
         <p>لا تؤجل قرار التعافي، ابدأ اليوم.</p>
       </div>
 
-      <a routerLink="/register" class="primary-btn">
+      <a routerLink="/user-profile" [queryParams]="{tab: 'available'}" class="primary-btn">
         احجز مقعدك الآن
         <i class="fa-solid fa-chevron-left"></i>
       </a>
     </section>
-  </main>
+  </div>
 </section>
