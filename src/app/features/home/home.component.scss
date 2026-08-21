@@ -1005,7 +1005,7 @@ section:not(.hero) { padding-block: 2px 60px; }
 
 .legal-grid {
   display: grid;
-  grid-template-columns: 1.45fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   align-items: start;
 }
@@ -1203,7 +1203,6 @@ section:not(.hero) { padding-block: 2px 60px; }
   .stats-grid { grid-column: 1 / -1; grid-template-columns: repeat(4, 1fr); }
   .services-grid { grid-template-columns: repeat(3, 1fr); }
   .legal-grid { grid-template-columns: 1fr 1fr; }
-  .legal-card:first-child { grid-column: 1 / -1; }
 }
 
 @media (max-width: 760px) {
