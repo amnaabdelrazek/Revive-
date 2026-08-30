@@ -310,7 +310,7 @@
                 <div class="book-card-text">
                   <strong>احجز جلسة جماعية</strong>
                   <span>مشاركة وتفاعل مع مجموعة دعم متكاملة</span>
-                  <small>انضم الآن · متاح</small>
+                  <small>{{ groupSessions.length > 0 ? 'انضم الآن · متاح' : 'لا توجد جلسات حالياً' }}</small>
                 </div>
               </div>
               <div class="book-card-arrow">
@@ -334,7 +334,7 @@
                 <div class="book-card-text">
                   <strong>احجز جلسة فردية</strong>
                   <span>جلسة خاصة مع طبيب أو أخصائي متخصص</span>
-                  <small>جلسة مخصصة · متاح</small>
+                  <small>{{ hasAvailableIndividualSession ? 'جلسة مخصصة · متاح' : 'لا توجد جلسات حالياً' }}</small>
                 </div>
               </div>
               <div class="book-card-arrow">
