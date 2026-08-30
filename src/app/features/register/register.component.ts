@@ -260,7 +260,9 @@ export class RegisterComponent {
 
     this.authService.register(payload as RegisterData).subscribe({
       next: () => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/verify'], {
+          state: { phone: payload.mobile_number },
+        });
       },
       error: () => {
         this.registerForm.setErrors({ submitFailed: true });
