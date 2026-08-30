@@ -130,7 +130,8 @@ export class AuthService {
       tap((response: any) => {
         const token = response?.body?.token || response?.token;
         if (token) {
-          this.setPendingVerificationToken(token);
+          this.setAuthToken(token);
+          this.clearPendingVerificationToken();
         }
       })
     );

@@ -279,7 +279,7 @@
 
       @if (registerForm.errors?.['submitFailed']) {
         <small class="error-message d-block text-center">
-          حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى
+          {{ serverErrorMessage || 'حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى' }}
         </small>
       }
 

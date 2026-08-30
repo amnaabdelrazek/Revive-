@@ -23,6 +23,7 @@ export class RegisterComponent {
 
   showPassword = false;
   selectedCountryDialCode = '+20';
+  serverErrorMessage = '';
 
   countries = [
     { flag: '🇪🇬', name: 'مصر', dialCode: '+20' },
@@ -231,6 +232,8 @@ export class RegisterComponent {
   }
 
   submit(): void {
+    this.serverErrorMessage = '';
+
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -260,13 +263,68 @@ export class RegisterComponent {
 
     this.authService.register(payload as RegisterData).subscribe({
       next: () => {
-        this.router.navigate(['/verify'], {
-          state: { phone: payload.mobile_number },
-        });
+        this.router.navigate(['/']);
       },
-      error: () => {
+      error: (error) => {
+        this.serverErrorMessage = this.getSubmitErrorMessage(error);
         this.registerForm.setErrors({ submitFailed: true });
       },
     });
+  }
+
+  private getSubmitErrorMessage(error: unknown): string {
+    const message = this.extractErrorMessage(error);
+
+    if (!message) {
+      return 'حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى';
+    }
+
+    const normalizedMessage = message.toLowerCase();
+
+    if (normalizedMessage.includes('mobile number already exists')) {
+      return 'رقم الواتساب مستخدم بالفعل، جرّب تسجيل الدخول أو استخدم رقمًا آخر';
+    }
+
+    if (normalizedMessage.includes('mobile number must be')) {
+      return 'رقم الواتساب غير صحيح، اكتب الرقم بصيغة صحيحة';
+    }
+
+    if (normalizedMessage.includes('twilio verify is not configured')) {
+      return 'خدمة إرسال رمز التحقق غير مفعّلة حاليًا';
+    }
+
+    if (normalizedMessage.includes('otp provider rejected')) {
+      return 'تعذر إرسال رمز التحقق على واتساب، تأكد من الرقم وحاول مرة أخرى';
+    }
+
+    return message;
+  }
+
+  private extractErrorMessage(error: unknown): string {
+    if (!error || typeof error !== 'object') {
+      return '';
+    }
+
+    const httpError = error as {
+      error?: {
+        message?: unknown;
+        errors?: Record<string, unknown>;
+      };
+      message?: unknown;
+    };
+
+    if (typeof httpError.error?.message === 'string') {
+      return httpError.error.message;
+    }
+
+    const firstValidationError = Object.values(httpError.error?.errors ?? {})
+      .flat()
+      .find((value): value is string => typeof value === 'string');
+
+    if (firstValidationError) {
+      return firstValidationError;
+    }
+
+    return typeof httpError.message === 'string' ? httpError.message : '';
   }
 }
