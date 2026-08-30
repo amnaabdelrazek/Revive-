@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, RegisterData } from '../../core/services/auth.service';
@@ -129,7 +129,7 @@ export class RegisterComponent {
   registerForm = this.fb.group({
     display_name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
     mobile_number: ['', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(8), this.notBlankValidator]],
     confirmPassword: ['', Validators.required],
 
     preferred_language: ['ar'],
@@ -224,6 +224,10 @@ export class RegisterComponent {
       return 'كلمة المرور يجب ألا تقل عن 8 أحرف';
     }
 
+    if (controlName === 'password' && control.hasError('blank')) {
+      return 'كلمة المرور لا يمكن أن تكون مسافات فقط';
+    }
+
     if (controlName === 'days_clean' && control.hasError('min')) {
       return 'عدد الأيام لا يمكن أن يكون أقل من صفر';
     }
@@ -314,5 +318,11 @@ export class RegisterComponent {
     }
 
     return typeof httpError.message === 'string' ? httpError.message : '';
+  }
+
+  private notBlankValidator(control: AbstractControl): ValidationErrors | null {
+    return typeof control.value === 'string' && control.value.trim().length === 0
+      ? { blank: true }
+      : null;
   }
 }
