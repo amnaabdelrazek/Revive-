@@ -275,29 +275,7 @@ export class RegisterComponent {
   private getSubmitErrorMessage(error: unknown): string {
     const message = this.extractErrorMessage(error);
 
-    if (!message) {
-      return 'حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى';
-    }
-
-    const normalizedMessage = message.toLowerCase();
-
-    if (normalizedMessage.includes('mobile number already exists')) {
-      return 'رقم الواتساب مستخدم بالفعل، جرّب تسجيل الدخول أو استخدم رقمًا آخر';
-    }
-
-    if (normalizedMessage.includes('mobile number must be')) {
-      return 'رقم الواتساب غير صحيح، اكتب الرقم بصيغة صحيحة';
-    }
-
-    if (normalizedMessage.includes('twilio verify is not configured')) {
-      return 'خدمة إرسال رمز التحقق غير مفعّلة حاليًا';
-    }
-
-    if (normalizedMessage.includes('otp provider rejected')) {
-      return 'تعذر إرسال رمز التحقق على واتساب، تأكد من الرقم وحاول مرة أخرى';
-    }
-
-    return message;
+    return message || 'حدث خطأ أثناء إنشاء الحساب، حاول مرة أخرى';
   }
 
   private extractErrorMessage(error: unknown): string {
@@ -306,12 +284,22 @@ export class RegisterComponent {
     }
 
     const httpError = error as {
-      error?: {
+      error?: string | {
         message?: unknown;
         errors?: Record<string, unknown>;
       };
       message?: unknown;
     };
+
+    if (typeof httpError.error === 'string') {
+      try {
+        const parsed = JSON.parse(httpError.error) as { message?: unknown };
+
+        return typeof parsed.message === 'string' ? parsed.message : httpError.error;
+      } catch {
+        return httpError.error;
+      }
+    }
 
     if (typeof httpError.error?.message === 'string') {
       return httpError.error.message;
