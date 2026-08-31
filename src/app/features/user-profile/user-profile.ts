@@ -90,7 +90,7 @@ export class UserProfile implements OnInit {
   upcomingHistoryTickets: SessionTicket[] = [];
   hasNoSessions = false;
 
-  activeMainTab: 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid' = 'profile';
+  activeMainTab: 'profile' | 'available' | 'upcomingPaid' | 'missed' = 'profile';
 
   selectedSessionKey: string | null = null;
   bookingConfirmed = false;
@@ -386,8 +386,12 @@ export class UserProfile implements OnInit {
     // Read 'tab' query param (e.g. from home page احجز مقعدك button)
     this.route.queryParams.subscribe((params) => {
       const tab = params['tab'];
-      if (tab && ['profile', 'available', 'attended', 'missed', 'upcomingPaid'].includes(tab)) {
-        this.activeMainTab = tab as 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid';
+      if (tab && ['profile', 'available', 'upcomingPaid', 'missed', 'attended'].includes(tab)) {
+        if (tab === 'attended') {
+          this.activeMainTab = 'missed';
+        } else {
+          this.activeMainTab = tab as any;
+        }
       }
     });
 
@@ -404,21 +408,19 @@ export class UserProfile implements OnInit {
     this.loadHistorySessions();
   }
 
-  switchMainTab(tab: 'profile' | 'available' | 'attended' | 'missed' | 'upcomingPaid'): void {
+  switchMainTab(tab: 'profile' | 'available' | 'upcomingPaid' | 'missed'): void {
     this.activeMainTab = tab;
-    if (tab !== 'available' && tab !== 'profile' && !this.attendedHistoryTickets.length && !this.missedHistoryTickets.length && !this.upcomingHistoryTickets.length) {
+    if (tab !== 'available' && tab !== 'profile' && !this.missedHistoryTickets.length && !this.upcomingHistoryTickets.length) {
       this.loadHistorySessions();
     }
   }
 
   getCurrentTabTickets(): SessionTicket[] {
     switch (this.activeMainTab) {
-      case 'attended':
-        return this.attendedHistoryTickets;
-      case 'missed':
-        return this.missedHistoryTickets;
       case 'upcomingPaid':
         return this.upcomingHistoryTickets;
+      case 'missed':
+        return this.missedHistoryTickets;
       default:
         return [];
     }
@@ -428,12 +430,10 @@ export class UserProfile implements OnInit {
     switch (tab) {
       case 'profile':
         return 'fa-solid fa-user text-info';
-      case 'attended':
-        return 'fa-solid fa-circle-check text-success';
-      case 'missed':
-        return 'fa-solid fa-circle-xmark text-warning';
       case 'upcomingPaid':
         return 'fa-solid fa-calendar-check text-primary';
+      case 'missed':
+        return 'fa-solid fa-circle-xmark text-warning';
       default:
         return 'fa-solid fa-calendar';
     }
@@ -443,12 +443,10 @@ export class UserProfile implements OnInit {
     switch (tab) {
       case 'profile':
         return 'الملف الشخصي';
-      case 'attended':
-        return 'محاضرات مكتملة';
-      case 'missed':
-        return 'محاضرات فائتة';
       case 'upcomingPaid':
         return 'محاضرات قادمة';
+      case 'missed':
+        return 'محاضرات فائتة';
       default:
         return 'الجلسات';
     }
@@ -456,12 +454,10 @@ export class UserProfile implements OnInit {
 
   getEmptyMessage(tab: string): string {
     switch (tab) {
-      case 'attended':
-        return 'لا توجد محاضرات مكتملة حتى الآن';
-      case 'missed':
-        return 'لا توجد محاضرات فائتة حتى الآن';
       case 'upcomingPaid':
         return 'لا توجد محاضرات قادمة حتى الآن';
+      case 'missed':
+        return 'لا توجد محاضرات فائتة حتى الآن';
       default:
         return 'لا توجد بيانات';
     }

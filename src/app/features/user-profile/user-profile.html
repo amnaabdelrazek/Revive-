@@ -44,13 +44,13 @@
 
       <button
         type="button"
-        class="profile-tab-btn attended-tab"
-        [class.active]="activeMainTab === 'attended'"
-        (click)="switchMainTab('attended')"
+        class="profile-tab-btn upcoming-tab"
+        [class.active]="activeMainTab === 'upcomingPaid'"
+        (click)="switchMainTab('upcomingPaid')"
       >
-        <i class="fa-solid fa-circle-check"></i>
-        <span>محاضرات مكتملة</span>
-        <span class="tab-badge green">{{ attendedHistoryTickets.length }}</span>
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>محاضرات قادمة</span>
+        <span class="tab-badge blue">{{ upcomingHistoryTickets.length }}</span>
       </button>
 
       <button
@@ -62,17 +62,6 @@
         <i class="fa-solid fa-circle-xmark"></i>
         <span>محاضرات فائتة</span>
         <span class="tab-badge orange">{{ missedHistoryTickets.length }}</span>
-      </button>
-
-      <button
-        type="button"
-        class="profile-tab-btn upcoming-tab"
-        [class.active]="activeMainTab === 'upcomingPaid'"
-        (click)="switchMainTab('upcomingPaid')"
-      >
-        <i class="fa-solid fa-calendar-check"></i>
-        <span>محاضرات قادمة</span>
-        <span class="tab-badge blue">{{ upcomingHistoryTickets.length }}</span>
       </button>
     </nav>
 
@@ -348,8 +337,8 @@
       }
 
 
-      <!-- TAB 3, 4, 5: Attended / Missed / Upcoming Paid (Full Page Width) -->
-      @if (activeMainTab === 'attended' || activeMainTab === 'missed' || activeMainTab === 'upcomingPaid') {
+      <!-- TAB 3, 4: Upcoming Paid / Missed (Full Page Width) -->
+      @if (activeMainTab === 'upcomingPaid' || activeMainTab === 'missed') {
         <div class="tab-sessions-panel full-width-panel">
           <div class="tab-panel-header">
             <div class="header-left">

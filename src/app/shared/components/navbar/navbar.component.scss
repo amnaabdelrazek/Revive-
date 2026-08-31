@@ -35,6 +35,9 @@ $btn-font-size:       14px;
 // ── Host ────────────────────────────────────
 :host {
   display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   width: 100%;
   direction: rtl;
   margin: 0;
@@ -45,7 +48,9 @@ $btn-font-size:       14px;
 // ── Navbar base ───────────────────────────────────────
 .revive-navbar {
   height: $navbar-height;
-  background-color: $navbar-bg;
+  background-color: rgba(13, 21, 39, 0.94);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
   padding: 0 !important;
   margin: 0 !important;
   line-height: normal;

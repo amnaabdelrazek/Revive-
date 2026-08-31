@@ -28,7 +28,7 @@ button, a { font: inherit; }
 // ─── Layout ──────────────────────────────────────────────────────────────────
 .landing-page {
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background: var(--bg-base);
 }
 
