@@ -942,25 +942,25 @@ export class UserProfile implements OnInit {
       const attendance = (session as any).attendance_status || (session as any).attendance?.status || (session as any).was_present;
 
       let ticketStatus: SessionTicket['status'] = 'paid';
-      let statusLabel = 'جلسة مدفوعة';
+      let statusLabel = 'محاضرة مدفوعة';
 
       if (status === 'finished' || status === 'completed') {
         if (attendance === 'absent' || attendance === false || attendance === 'false') {
           ticketStatus = 'missed';
-          statusLabel = 'لم يتم الحضور (مدفوعة)';
+          statusLabel = 'محاضرة مدفوعة';
         } else {
           ticketStatus = 'finished';
-          statusLabel = 'تمت الجلسة (مدفوعة)';
+          statusLabel = 'محاضرة مكتملة';
         }
       } else if (status === 'cancelled') {
         ticketStatus = 'cancelled';
         statusLabel = 'ملغية';
       } else if (status === 'upcoming' || status === 'scheduled') {
         ticketStatus = 'upcoming';
-        statusLabel = 'قادمة (مدفوعة)';
+        statusLabel = 'محاضرة قادمة';
       } else if (session.is_booked) {
         ticketStatus = 'paid';
-        statusLabel = 'جلسة مدفوعة';
+        statusLabel = 'محاضرة مدفوعة';
       }
 
       return {
