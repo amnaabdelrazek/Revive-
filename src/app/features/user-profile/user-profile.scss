@@ -29,6 +29,9 @@ a {
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   height: 74px;
   padding: 0 4%;
   border-bottom: 1px solid rgba(35, 57, 93, 0.6);

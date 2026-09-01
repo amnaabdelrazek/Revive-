@@ -202,7 +202,9 @@ $btn-font-size:       14px;
   .nav-profile        { width: 36px; height: 36px; }
 }
 .revive-navbar {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   border-bottom: 1px solid $navbar-border;
   display: flex;
   align-items: center;
