@@ -121,6 +121,7 @@ export class AuthService {
   private readonly AUTH_KEY = 'auth_token';
   private readonly AVATAR_KEY = 'user_avatar_url';
   private readonly PENDING_VERIFY_KEY = 'pending-verify-token';
+  private readonly NEW_REGISTRATION_KEY = 'new-registration';
   private readonly apiBaseUrl = environment.apiBaseUrl;
 
   constructor(private readonly http: HttpClient) {}
@@ -133,6 +134,7 @@ export class AuthService {
           this.setAuthToken(token);
           this.clearPendingVerificationToken();
         }
+        this.markNewRegistration();
       })
     );
   }
@@ -283,6 +285,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.AUTH_KEY);
     localStorage.removeItem(this.AVATAR_KEY);
+    localStorage.removeItem(this.NEW_REGISTRATION_KEY);
     this.clearData();
   }
 
@@ -327,6 +330,14 @@ export class AuthService {
 
   clearPendingVerificationToken(): void {
     localStorage.removeItem(this.PENDING_VERIFY_KEY);
+  }
+
+  markNewRegistration(): void {
+    localStorage.setItem(this.NEW_REGISTRATION_KEY, 'true');
+  }
+
+  isNewRegistration(): boolean {
+    return localStorage.getItem(this.NEW_REGISTRATION_KEY) === 'true';
   }
 
   private setPendingVerificationToken(token: string): void {

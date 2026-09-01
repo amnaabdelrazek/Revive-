@@ -200,3 +200,65 @@
   color: #ff6b6b;
 }
 
+@media (max-width: 560px) {
+  .ticket {
+    min-height: 0;
+    grid-template-columns: 82px 1px minmax(0, 1fr) 24px;
+    border-radius: 9px;
+  }
+
+  .ticket-date {
+    padding: 14px 8px;
+  }
+
+  .ticket-date small,
+  .ticket-date em {
+    font-size: 10px;
+  }
+
+  .ticket-date strong {
+    font-size: 13px;
+  }
+
+  .ticket-info {
+    min-width: 0;
+    padding: 13px 10px;
+  }
+
+  .ticket-topline,
+  .price-line,
+  .seats-line {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .session-meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    line-height: 1.5;
+  }
+
+  .ticket-info > strong,
+  .ticket-info > small,
+  .price-line {
+    line-height: 1.6;
+  }
+
+  .selection-icon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ticket {
+    grid-template-columns: 1fr 24px;
+  }
+
+  .ticket-date,
+  .ticket-cut {
+    display: none;
+  }
+}
+

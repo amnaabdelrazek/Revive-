@@ -20,6 +20,13 @@
   </header>
 
   <main class="profile-shell">
+    @if (showFirstFreeSessionNotice) {
+      <div class="free-session-notice">
+        <i class="fa-solid fa-gift"></i>
+        <span>الجلسة الأولى مجانية، وسنرسل لك رابط الدخول في موعد الجلسة.</span>
+      </div>
+    }
+
     <!-- Sub-Navbar / Main Navigation Tabs (Top level above all content) -->
     <nav class="profile-tabs-bar">
       <button

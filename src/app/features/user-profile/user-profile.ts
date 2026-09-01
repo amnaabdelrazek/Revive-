@@ -104,6 +104,7 @@ export class UserProfile implements OnInit {
   individualTicketPopupOpen = false;
   groupTicketPopupOpen = false;
   hasAvailableIndividualSession = false;
+  showFirstFreeSessionNotice = false;
 
   allSessions: RecoverySession[] = [];
   groupSessions: RecoverySession[] = [];
@@ -382,6 +383,8 @@ export class UserProfile implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    this.showFirstFreeSessionNotice = this.authService.isNewRegistration();
 
     // Read 'tab' query param (e.g. from home page احجز مقعدك button)
     this.route.queryParams.subscribe((params) => {
@@ -876,10 +879,13 @@ export class UserProfile implements OnInit {
   }
 
   private mergeSessions(upcomingResponse: SessionApiResponse, unpaidResponse: SessionApiResponse): SessionApiResponse {
-    const mergedSessions = [
+    const allSessions = [
       ...(upcomingResponse?.body?.sessions ?? []),
       ...(unpaidResponse?.body?.sessions ?? []),
     ];
+    const mergedSessions = allSessions.filter((session, index, sessions) =>
+      sessions.findIndex((item) => item.id === session.id) === index
+    );
 
     return {
       custom_code: upcomingResponse?.custom_code ?? unpaidResponse?.custom_code ?? 2000,
