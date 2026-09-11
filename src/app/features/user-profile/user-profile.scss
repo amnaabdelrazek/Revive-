@@ -138,15 +138,23 @@ a {
   border: 1px solid rgba(16, 185, 129, 0.35);
   border-radius: 12px;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   color: #dffcf0;
   background: rgba(16, 185, 129, 0.12);
   font-size: 14px;
   font-weight: 800;
+  line-height: 1.6;
 
   i {
     color: #34d399;
+    font-size: 16px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
   }
 }
 
@@ -1556,6 +1564,19 @@ a {
   .profile-shell {
     width: min(100% - 24px, 1180px);
     padding-bottom: 48px;
+  }
+
+  .free-session-notice {
+    padding: 12px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    gap: 10px;
+    line-height: 1.6;
+
+    i {
+      font-size: 15px;
+      margin-top: 2px;
+    }
   }
 
   .profile-tabs-bar {

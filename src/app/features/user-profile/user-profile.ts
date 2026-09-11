@@ -104,7 +104,7 @@ export class UserProfile implements OnInit {
   individualTicketPopupOpen = false;
   groupTicketPopupOpen = false;
   hasAvailableIndividualSession = false;
-  showFirstFreeSessionNotice = false;
+  showFirstFreeSessionNotice = true;
 
   allSessions: RecoverySession[] = [];
   groupSessions: RecoverySession[] = [];
@@ -596,7 +596,7 @@ export class UserProfile implements OnInit {
         this.missedHistoryTickets = allPaid.filter(t => t.status === 'missed');
         this.upcomingHistoryTickets = upcomingMapped.filter(t => t.status === 'upcoming' || t.status === 'paid');
         this.historyTickets = allPaid;
-        this.showFirstFreeSessionNotice = allPaid.length === 0 && upcomingMapped.length === 0;
+        this.showFirstFreeSessionNotice = true;
 
         this.historyLoading = false;
         this.cdr.markForCheck();
@@ -607,7 +607,7 @@ export class UserProfile implements OnInit {
         this.attendedHistoryTickets = [];
         this.missedHistoryTickets = [];
         this.upcomingHistoryTickets = [];
-        this.showFirstFreeSessionNotice = false;
+        this.showFirstFreeSessionNotice = true;
         this.historyLoading = false;
         this.historyError = 'تعذر تحميل سجل الجلسات';
         this.cdr.markForCheck();
