@@ -1032,7 +1032,7 @@ export class UserProfile implements OnInit {
 
   private formatSessionTime(value: string): string {
     if (!value) { return ''; }
-    const [hours, minutes] = value.split(':').map((part) => Number(part));
+    const [hours, minutes] = value.split(':').map((part: string) => Number(part));
     if (Number.isNaN(hours) || Number.isNaN(minutes)) { return value; }
     const period = hours >= 12 ? 'م' : 'ص';
     const normalizedHours = hours % 12 || 12;
@@ -1040,6 +1040,7 @@ export class UserProfile implements OnInit {
   }
 
   private parseDate(value: string): Date | null {
+    if (!value) { return null; }
     const parts = value.split('/');
     if (parts.length !== 3) { return null; }
     const [day, month, year] = parts;
