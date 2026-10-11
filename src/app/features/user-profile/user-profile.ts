@@ -486,10 +486,30 @@ export class UserProfile implements OnInit {
       unpaid: this.authService.getUpcomingUnpaidSessions(),
       unpaidIndividual: this.authService.getUpcomingUnpaidIndividualSessions(),
     }).subscribe({
-      next: ({ upcoming, unpaid, unpaidIndividual }) => {
         const mappedUpcoming = this.mapHistoryTickets(upcoming);
-        this.upcomingIndividualTickets = mappedUpcoming.filter(t => t.type === 'جلسة فردية');
-        this.upcomingGroupTickets = mappedUpcoming.filter(t => t.type === 'جلسة جماعية');
+
+        // Merge locally booked sessions (from InstaPay transfer confirmation)
+        let localBooked: SessionTicket[] = [];
+        try {
+          const rawLocal = localStorage.getItem('revive_booked_sessions');
+          if (rawLocal) {
+            localBooked = JSON.parse(rawLocal);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+
+        const combinedUpcoming = [...localBooked, ...mappedUpcoming];
+        const uniqueUpcomingMap = new Map<number, SessionTicket>();
+        combinedUpcoming.forEach(ticket => {
+          if (!uniqueUpcomingMap.has(ticket.id)) {
+            uniqueUpcomingMap.set(ticket.id, ticket);
+          }
+        });
+        const finalUpcoming = Array.from(uniqueUpcomingMap.values());
+
+        this.upcomingIndividualTickets = finalUpcoming.filter(t => t.type === 'جلسة فردية');
+        this.upcomingGroupTickets = finalUpcoming.filter(t => t.type === 'جلسة جماعية');
 
         const mappedUnpaid = this.mapSessions(this.mergeSessions(unpaid, unpaidIndividual));
         this.allSessions = mappedUnpaid;
@@ -585,8 +605,19 @@ export class UserProfile implements OnInit {
         const upcomingMapped = this.mapHistoryTickets(upcoming);
         const historyMapped = this.mapHistoryTickets(history);
 
+        // Merge locally booked sessions
+        let localBooked: SessionTicket[] = [];
+        try {
+          const rawLocal = localStorage.getItem('revive_booked_sessions');
+          if (rawLocal) {
+            localBooked = JSON.parse(rawLocal);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+
         const ticketsMap = new Map<number, SessionTicket>();
-        [...attendedMapped, ...upcomingMapped, ...historyMapped].forEach((ticket) => {
+        [...localBooked, ...attendedMapped, ...upcomingMapped, ...historyMapped].forEach((ticket) => {
           ticketsMap.set(ticket.id, ticket);
         });
 
@@ -594,7 +625,7 @@ export class UserProfile implements OnInit {
 
         this.attendedHistoryTickets = allPaid.filter(t => t.status === 'finished');
         this.missedHistoryTickets = allPaid.filter(t => t.status === 'missed');
-        this.upcomingHistoryTickets = upcomingMapped.filter(t => t.status === 'upcoming' || t.status === 'paid');
+        this.upcomingHistoryTickets = allPaid.filter(t => t.status === 'upcoming' || t.status === 'paid');
         this.historyTickets = allPaid;
         this.showFirstFreeSessionNotice = true;
 
@@ -637,10 +668,12 @@ export class UserProfile implements OnInit {
   navigateToPayment(session: RecoverySession): void {
     this.router.navigate(['/payment'], {
       queryParams: {
+        sessionId: session.id,
         type: session.sessionType,
         sessionNumber: session.sessionNumber ?? '',
         title: session.title ?? '',
-        date: `${session.day}، ${session.date}`,
+        day: session.day,
+        date: session.date,
         time: session.time,
         specialist: session.specialist,
         price: session.price,
