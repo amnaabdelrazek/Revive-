@@ -82,176 +82,88 @@
           </div>
         </aside>
 
-        <!-- Right: Payment Form -->
+        <!-- Right: InstaPay QR and Instructions -->
         <div class="payment-form-wrap">
 
-          <!-- ──── Live Card Preview ──── -->
-          <div class="card-preview-wrap" [class.flipped]="cardFlipped">
-            <!-- Front -->
-            <div class="card-face card-front" [class.visa]="cardBrand === 'visa'" [class.mc]="cardBrand === 'mastercard'">
-              <div class="card-front-top">
-                <div class="chip">
-                  <div class="chip-line"></div>
-                  <div class="chip-line"></div>
-                  <div class="chip-line"></div>
-                </div>
-                @if (cardBrand === 'visa') {
-                  <span class="card-logo visa-logo">VISA</span>
-                } @else if (cardBrand === 'mastercard') {
-                  <div class="card-logo mc-logo">
-                    <span class="mc-circle mc-left"></span>
-                    <span class="mc-circle mc-right"></span>
-                  </div>
-                } @else {
-                  <div class="card-logo card-logo-generic">
-                    <i class="fa-solid fa-credit-card"></i>
-                  </div>
-                }
-              </div>
-              <div class="card-number-display">{{ formattedCardNumber }}</div>
-              <div class="card-bottom-info">
-                <div class="card-holder-info">
-                  <small>حامل البطاقة</small>
-                  <span>{{ displayCardHolder }}</span>
-                </div>
-                <div class="card-expiry-info">
-                  <small>الصلاحية</small>
-                  <span>{{ displayExpiry }}</span>
-                </div>
+          <div class="instapay-card">
+            <div class="instapay-badge">
+              <i class="fa-solid fa-bolt"></i>
+              الدفع عبر إنستا باي (InstaPay)
+            </div>
+
+            <h2 class="instapay-title">امسح رمز الـ QR أو حوّل للحساب</h2>
+            <p class="instapay-desc">
+              افتح تطبيق <strong>InstaPay</strong> على هاتفك، وامسح الرمز أدناه أو استخدم عنوان الدفع اللحظي (IPA) لإتمام التحويل.
+            </p>
+
+            <!-- QR Code Box -->
+            <div class="qr-box-wrap">
+              <div class="qr-glow"></div>
+              <div class="qr-frame">
+                <img [src]="qrImageUrl" alt="InstaPay QR Code" class="qr-image" />
               </div>
             </div>
 
-            <!-- Back -->
-            <div class="card-face card-back">
-              <div class="card-strip"></div>
-              <div class="card-cvv-wrap">
-                <small>CVV</small>
-                <div class="card-cvv-box">{{ displayCvv }}</div>
+            <!-- Account Details / Copy Box -->
+            <div class="account-pill-box">
+              <div class="account-label">
+                <i class="fa-solid fa-at"></i>
+                عنوان الدفع اللحظي (IPA):
               </div>
+              <div class="account-row">
+                <code class="account-address">{{ instapayAccount }}</code>
+                <button type="button" class="copy-btn" (click)="copyInstapayAccount()" [class.copied]="copied">
+                  @if (copied) {
+                    <i class="fa-solid fa-check"></i>
+                    تم النسخ!
+                  } @else {
+                    <i class="fa-regular fa-copy"></i>
+                    نسخ الحساب
+                  }
+                </button>
+              </div>
+            </div>
+
+            <!-- Steps Instructions -->
+            <div class="instapay-steps">
+              <div class="step-item">
+                <span class="step-num">1</span>
+                <span>افتح تطبيق <strong>InstaPay</strong> واختر "إرسال نقود" أو مسح QR.</span>
+              </div>
+              <div class="step-item">
+                <span class="step-num">2</span>
+                <span>حوّل المبلغ المحدد (<strong>{{ sessionPrice || 'سعر الجلسة' }}</strong>) للحساب أعلاه.</span>
+              </div>
+              <div class="step-item">
+                <span class="step-num">3</span>
+                <span>بعد إتمام التحويل بنجاح، اضغط على زر <strong>"تأكيد التحويل"</strong> بالأسفل.</span>
+              </div>
+            </div>
+
+            <!-- Confirmation Action -->
+            <div class="confirm-action-box">
+              <button
+                type="button"
+                class="pay-btn"
+                [disabled]="submitting"
+                [class.loading]="submitting"
+                (click)="confirmTransfer()"
+              >
+                @if (submitting) {
+                  <span class="spinner"></span>
+                  جاري تأكيد التحويل...
+                } @else {
+                  <i class="fa-solid fa-circle-check"></i>
+                  لقد قمت بالتحويل — تأكيد الحجز
+                }
+              </button>
+
+              <p class="secure-note">
+                <i class="fa-solid fa-shield-halved"></i>
+                سيتم تأكيد جلستك وإرسال تفاصيل الموعد فور مراجعة التحويل
+              </p>
             </div>
           </div>
-
-          <!-- ──── Card Form ──── -->
-          <form class="card-form" (ngSubmit)="submitPayment()" novalidate>
-            <h2 class="form-title">
-              <i class="fa-solid fa-credit-card"></i>
-              بيانات البطاقة
-            </h2>
-
-            <!-- Card Number -->
-            <div class="field-group">
-              <label for="cardNumber">رقم البطاقة</label>
-              <div class="input-wrap">
-                <i class="fa-solid fa-credit-card field-icon"></i>
-                <input
-                  id="cardNumber"
-                  type="text"
-                  inputmode="numeric"
-                  class="card-input"
-                  placeholder="0000 0000 0000 0000"
-                  [value]="cardNumber"
-                  (input)="formatCardNumber($event)"
-                  maxlength="19"
-                  dir="ltr"
-                  autocomplete="cc-number"
-                />
-                @if (cardBrand === 'visa') {
-                  <span class="brand-pill visa">VISA</span>
-                } @else if (cardBrand === 'mastercard') {
-                  <span class="brand-pill mc">MC</span>
-                }
-              </div>
-            </div>
-
-            <!-- Cardholder Name -->
-            <div class="field-group">
-              <label for="cardHolder">اسم حامل البطاقة</label>
-              <div class="input-wrap">
-                <i class="fa-solid fa-user field-icon"></i>
-                <input
-                  id="cardHolder"
-                  type="text"
-                  class="card-input"
-                  placeholder="الاسم كما يظهر على البطاقة"
-                  [(ngModel)]="cardHolder"
-                  name="cardHolder"
-                  autocomplete="cc-name"
-                  (input)="cardHolder = $any($event.target).value.toUpperCase()"
-                />
-              </div>
-            </div>
-
-            <!-- Expiry + CVV row -->
-            <div class="field-row">
-              <div class="field-group">
-                <label for="expiryDate">تاريخ الانتهاء</label>
-                <div class="input-wrap">
-                  <i class="fa-regular fa-calendar field-icon"></i>
-                  <input
-                    id="expiryDate"
-                    type="text"
-                    inputmode="numeric"
-                    class="card-input"
-                    placeholder="MM / YY"
-                    [value]="expiryDate"
-                    (input)="formatExpiry($event)"
-                    maxlength="5"
-                    dir="ltr"
-                    autocomplete="cc-exp"
-                  />
-                </div>
-              </div>
-
-              <div class="field-group">
-                <label for="cvv">CVV</label>
-                <div class="input-wrap">
-                  <i class="fa-solid fa-lock field-icon"></i>
-                  <input
-                    id="cvv"
-                    type="password"
-                    inputmode="numeric"
-                    class="card-input"
-                    placeholder="•••"
-                    [value]="cvv"
-                    (input)="formatCvv($event)"
-                    (focus)="cardFlipped = true"
-                    (blur)="cardFlipped = false"
-                    maxlength="4"
-                    dir="ltr"
-                    autocomplete="cc-csc"
-                  />
-                </div>
-              </div>
-            </div>
-
-            @if (formError) {
-              <div class="error-banner">
-                <i class="fa-solid fa-circle-exclamation"></i>
-                {{ formError }}
-              </div>
-            }
-
-            <button
-              type="submit"
-              class="pay-btn"
-              [disabled]="submitting || !canSubmit()"
-              [class.loading]="submitting"
-            >
-              @if (submitting) {
-                <span class="spinner"></span>
-                جاري المعالجة...
-              } @else {
-                <i class="fa-solid fa-lock"></i>
-                ادفع الآن
-                @if (sessionPrice) { — {{ sessionPrice }} }
-              }
-            </button>
-
-            <p class="secure-note">
-              <i class="fa-solid fa-shield-halved"></i>
-              بياناتك مشفّرة بالكامل ولا تُحفظ على خوادمنا
-            </p>
-          </form>
 
         </div>
       </div>

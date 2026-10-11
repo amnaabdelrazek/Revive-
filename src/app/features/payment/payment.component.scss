@@ -693,6 +693,220 @@
   }
 }
 
+/* ─── InstaPay Card ──────────────────────────────── */
+.instapay-card {
+  background: rgba(10, 22, 40, 0.75);
+  border: 1px solid rgba(79, 70, 229, 0.22);
+  border-radius: 24px;
+  padding: 36px 32px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.instapay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.2), rgba(245, 158, 11, 0.15));
+  border: 1px solid rgba(79, 70, 229, 0.4);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 18px;
+
+  i {
+    color: #f59e0b;
+    font-size: 14px;
+  }
+}
+
+.instapay-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0 0 8px;
+}
+
+.instapay-desc {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 26px;
+  max-width: 440px;
+
+  strong {
+    color: #e2e8f0;
+  }
+}
+
+/* ─── QR Box ─────────────────────────────────────── */
+.qr-box-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.qr-glow {
+  position: absolute;
+  inset: -15px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.35), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.qr-frame {
+  position: relative;
+  padding: 14px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.qr-image {
+  width: 220px;
+  height: 220px;
+  display: block;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* ─── Account Pill Box ───────────────────────────── */
+.account-pill-box {
+  width: 100%;
+  max-width: 440px;
+  background: #061120;
+  border: 1px solid rgba(79, 70, 229, 0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  text-align: right;
+}
+
+.account-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i {
+    color: #818cf8;
+  }
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.account-address {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  color: #38bdf8;
+  direction: ltr;
+  letter-spacing: 0.5px;
+  word-break: break-all;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(56, 189, 248, 0.25);
+    border-color: #38bdf8;
+    transform: translateY(-1px);
+  }
+
+  &.copied {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #34d399;
+  }
+}
+
+/* ─── Steps Instructions ─────────────────────────── */
+.instapay-steps {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+  text-align: right;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  strong {
+    color: #f1f5f9;
+  }
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Confirm Action Box ─────────────────────────── */
+.confirm-action-box {
+  width: 100%;
+  max-width: 440px;
+
+  .pay-btn {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 720px) {
   .checkout-grid {
