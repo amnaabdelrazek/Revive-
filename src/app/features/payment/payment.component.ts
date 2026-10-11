@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -12,6 +12,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 export class PaymentComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   // Session info passed via query params
   sessionType: 'individual' | 'group' = 'group';
@@ -96,7 +97,14 @@ export class PaymentComponent implements OnInit {
     setTimeout(() => {
       this.submitting = false;
       this.submitted = true;
-    }, 1200);
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+
+      // Automatically navigate to user profile after 1.5s so user sees the booked session
+      setTimeout(() => {
+        this.goBack();
+      }, 1500);
+    }, 800);
   }
 
   goBack(): void {
