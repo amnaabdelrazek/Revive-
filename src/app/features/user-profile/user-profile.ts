@@ -486,6 +486,7 @@ export class UserProfile implements OnInit {
       unpaid: this.authService.getUpcomingUnpaidSessions(),
       unpaidIndividual: this.authService.getUpcomingUnpaidIndividualSessions(),
     }).subscribe({
+      next: ({ upcoming, unpaid, unpaidIndividual }) => {
         const mappedUpcoming = this.mapHistoryTickets(upcoming);
 
         // Merge locally booked sessions (from InstaPay transfer confirmation)
