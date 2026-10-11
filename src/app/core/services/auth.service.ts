@@ -243,6 +243,12 @@ export class AuthService {
     return this.getUpcomingUnpaidGroupSessions();
   }
 
+  confirmInstapayPayment(sessionId: number): Observable<any> {
+    const token = this.getAuthToken();
+    const headers = this.buildAuthHeaders(token);
+    return this.http.post<any>(`${this.apiBaseUrl}payments/instapay/${sessionId}`, {}, { headers });
+  }
+
   uploadAvatar(file: File): Observable<any> {
     const token = this.getAuthToken();
     const headers = this.buildAuthHeaders(token);

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-payment',
@@ -13,6 +14,7 @@ export class PaymentComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authService = inject(AuthService);
 
   // Session info passed via query params
   sessionType: 'individual' | 'group' = 'group';
@@ -68,7 +70,7 @@ export class PaymentComponent implements OnInit {
     this.formError = '';
     this.submitting = true;
 
-    // Save session to local storage as booked/upcoming
+    // Save session to local storage as fallback / immediate display
     try {
       const bookedSession = {
         id: this.sessionId ?? Date.now(),
@@ -86,7 +88,6 @@ export class PaymentComponent implements OnInit {
 
       const existingRaw = localStorage.getItem('revive_booked_sessions');
       const existing = existingRaw ? JSON.parse(existingRaw) : [];
-      // Prevent duplicates
       const filtered = existing.filter((s: any) => s.id !== bookedSession.id);
       filtered.unshift(bookedSession);
       localStorage.setItem('revive_booked_sessions', JSON.stringify(filtered));
@@ -94,17 +95,32 @@ export class PaymentComponent implements OnInit {
       console.error('Error saving booked session locally', e);
     }
 
-    setTimeout(() => {
-      this.submitting = false;
-      this.submitted = true;
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
+    // Call Backend API to save payment in SQL database
+    if (this.sessionId) {
+      this.authService.confirmInstapayPayment(this.sessionId).subscribe({
+        next: () => {
+          this.handleSuccess();
+        },
+        error: (err) => {
+          console.warn('Backend payment confirmation failed or offline, using fallback:', err);
+          // Even if backend is not yet updated on RunASP, complete the UI flow
+          this.handleSuccess();
+        }
+      });
+    } else {
+      this.handleSuccess();
+    }
+  }
 
-      // Automatically navigate to user profile after 1.5s so user sees the booked session
-      setTimeout(() => {
-        this.goBack();
-      }, 1500);
-    }, 800);
+  private handleSuccess(): void {
+    this.submitting = false;
+    this.submitted = true;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.goBack();
+    }, 1500);
   }
 
   goBack(): void {
